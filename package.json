@@ -7,9 +7,9 @@
     "test": "test"
   },
   "scripts": {
-    "test": "DEBUG='cfgram*' mocha",
+    "test": "DEBUG='wheatlessinv2*' mocha",
     "coveralls": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",
-    "start": "DEBUG='cfgram*' node server.js"
+    "start": "DEBUG='wheatlessinv2*' node server.js"
   },
   "repository": {
     "type": "git",
