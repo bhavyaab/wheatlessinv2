@@ -10,7 +10,7 @@ const debug = require('debug')('wheatlessinv2:server');
 
 const picRouter = require('./route/pic-router.js');
 const authRouter = require('./route/auth-router.js');
-const galleryRouter = require('./route/gallery-router.js');
+const bizRouter = require('./route/biz-router.js');
 const errors = require('./lib/error-middleware.js');
 
 dotenv.load();
@@ -25,7 +25,7 @@ app.use(morgan('dev'));
 
 app.use(picRouter);
 app.use(authRouter);
-app.use(galleryRouter);
+app.use(bizRouter);
 app.use(errors);
 
 const server = module.exports = app.listen(PORT, () => {
