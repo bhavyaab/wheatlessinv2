@@ -1,12 +1,7 @@
 'use strict';
 
-const createError = require('http-errors');
 const mongoose = require('mongoose');
-const Promise = require('bluebird');
-mongoose.Promise = Promise;
 const Schema = mongoose.Schema;
-//TODO: Confirm debug prefix
-const debug = require('debug')('wheatlessin:biz');
 
 const bizSchema = Schema({
   userId: { type: Schema.Types.ObjectId, required: true },
