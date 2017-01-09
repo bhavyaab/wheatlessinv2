@@ -2,74 +2,80 @@
 
 const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
-
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 const Promise = require('bluebird');
 const debug = require('debug')('wheatlessinv2:user');
 const createError = require('http-errors');
-
 const Schema = mongoose.Schema;
 
 const userSchema = Schema({
-  username: { type: String, required: true, unique: true},
-  email: { type: String, required: true, unique: true},
-  password: { type: String, required: true},
-  findHash: {type: String, unique:true}
+  username: { type: String, required: true, unique: true },
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
+  findHash: { type: String, unique: true }
 });
 
-userSchema.methods.generatePasswordHash = function(password){
-  debug('generatePasswordHash');
+userSchema.methods.generatePasswordHash = function(password) {
+  debug('generatePasswordHash', this.username);
 
-
-  return new Promise((resolve, reject) => {
+  return new Promise( (resolve, reject) => {
     bcrypt.hash(password, 10, (err, hash) => {
-      if (err) return reject(createError(400, 'bad request'));
+      if(err) return reject(createError(400, 'hash failed'));
       this.password = hash;
-      resolve(true);
-    });
-  });
-};
-
-userSchema.methods.comparePasswordHash = function(password){
-  debug('comparePasswordHash');
-
-  return new Promise((resolve, reject) => {
-    bcrypt.compare(password, this.password, (err, valid) => {
-      if (err) return reject(createError(400, 'bad request'));
-
-      if(!valid) return reject(createError(401, 'Unauthorized User'));
-
+      //TODO: Q: Should we call this.save() and resolve in then?
       resolve(this);
     });
   });
 };
 
-userSchema.methods.generateFindHash = function(){
-  debug('generateFindHash');
+userSchema.methods.comparePasswordHash = function(password) {
+  debug('comparePasswordHash', this.username);
 
-  return new Promise((resolve, reject) => {
+  return new Promise( (resolve, reject) => {
+    bcrypt.compare(password, this.password, (err, valid) => {
+      if(err) return reject(err);
+      if(!valid) return reject(createError(401, 'invalid password'));
+      resolve(this);
+    });
+  });
+};
+
+userSchema.methods.generateFindHash = function() {
+  debug('generateFindHash', this.username);
+
+  return new Promise( (resolve, reject) => {
     let tries = 0;
+
     _generateFindHash.call(this);
-    function _generateFindHash(){
+
+    function _generateFindHash() {
       this.findHash = crypto.randomBytes(32).toString('hex');
+      debug('trying', this.findHash);
       this.save()
-      .then( () => resolve(this.findHash))
-      .catch(err => {
-        if(tries> 3) return reject(err);
+      .then( user => {
+        debug('...success',user.findHash);
+        resolve(this.findHash);
+      })
+      .catch( err => {
+        debug('failed try',tries);
+        if(tries > 3) return reject(err);
         tries++;
         _generateFindHash.call(this);
+      })
+      .finally( () => {
+        debug('...finally done');
       });
     }
   });
 };
 
-userSchema.methods.generateToken = function(){
-  debug('generateToken');
+userSchema.methods.generateToken = function() {
+  debug('generateToken', this.username);
 
-  return new Promise((resolve, reject) => {
+  return new Promise( (resolve, reject) => {
     this.generateFindHash()
-    .then( findHash => resolve(jwt.sign({token: findHash}, process.env.APP_SECRET)))
+    .then( findHash => resolve(jwt.sign({ token: findHash }, process.env.APP_SECRET)))
     .catch( err => reject(err));
   });
 };
