@@ -24,7 +24,7 @@
   "homepage": "https://github.com/jmpaik/wheatlessinv2#readme",
   "dependencies": {
     "aws-sdk": "^2.7.21",
-    "bcrypt": "^1.0.2",
+    "bcryptjs": "^2.4.0",
     "bluebird": "^3.4.7",
     "body-parser": "^1.15.2",
     "cors": "^2.8.1",
