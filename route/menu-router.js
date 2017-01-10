@@ -19,8 +19,8 @@ menuRouter.post('/api/biz/:bizId/menu', bearerAuth, function(req, res, next) {
   .then( biz => {
     tempBiz = biz;
     let menuData = {
-      bizId: req.params.bizId
-      // isCompletelyGlutenFree: req.body.isCompletelyGlutenFree
+      bizId: req.params.bizId,
+      isCompletelyGlutenFree: req.body.isCompletelyGlutenFree
     };
     return new Menu(menuData).save();
   })
