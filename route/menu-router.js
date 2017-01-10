@@ -51,9 +51,9 @@ menuRouter.post('/api/biz/:bizId/menu', bearerAuth, upload.single('image'), func
   Biz.findById(req.params.bizId)
   .then( () => s3uploadProm(params))
   .then( s3data => {
-    del([`${dataDir}/*`]);
+    del(req.file.path);
     let menuData = {
-      menuId: req.menu._id,
+      
       objectKey: s3data.Key,
       imageURI: s3data.Location,
       bizId: req.params.bizId
