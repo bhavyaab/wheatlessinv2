@@ -31,22 +31,22 @@ function s3uploadProm(params) {
 menuRouter.post('/api/biz/:bizId/menu', bearerAuth, upload.single('image'), function(req, res, next) {
   debug('POST /api/biz/:bizId/menu');
 
-  if (!req.file) {
-    return next(createError(400, 'file not found'));
-  };
-
-  if (!req.file.path) {
-    return next(createError(500, 'file not saved'));
-  };
-
-  let ext = path.extname(req.file.originalname);
-
-  let params = {
-    ACL: 'public-read',
-    Bucket: process.env.AWS_BUCKET,
-    Key: `${req.file.filename}${ext}`,
-    Body: fs.createReadStream(req.file.path)
-  };
+  // if (!req.file) {
+  //   return next(createError(400, 'file not found'));
+  // };
+  //
+  // if (!req.file.path) {
+  //   return next(createError(500, 'file not saved'));
+  // };
+  //
+  // let ext = path.extname(req.file.originalname);
+  //
+  // let params = {
+  //   ACL: 'public-read',
+  //   Bucket: process.env.AWS_BUCKET,
+  //   Key: `${req.file.filename}${ext}`,
+  //   Body: fs.createReadStream(req.file.path)
+  // };
 
   Biz.findById(req.params.bizId)
   .then( biz => {
@@ -59,7 +59,7 @@ menuRouter.post('/api/biz/:bizId/menu', bearerAuth, upload.single('image'), func
   .then( menu => {
     biz.menuId = menu._id;
     return biz.save();
-  });
+  })
   .then( () => {
     res.json(menu);
   })
