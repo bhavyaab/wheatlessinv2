@@ -36,11 +36,12 @@ const exampleBusiness = {
 
 const url = `http://localhost:${process.env.PORT}`;
 
-function cleanup(done) {
-  Biz.remove({});
-  User.remove({});
-  Menu.remove({});
-  done();
+function cleanup() {
+  return Promise.all([
+    User.remove({}),
+    Biz.remove({}),
+    Menu.remove({})
+  ]);
 }
 
 describe('Menu routes', function() {
@@ -64,7 +65,7 @@ describe('Menu routes', function() {
 
   }); //before everything
 
-  after( done => cleanup(done));
+  after(cleanup);
 
   describe('POST /api/biz/:bizId/menu', () => {
 
@@ -86,39 +87,39 @@ describe('Menu routes', function() {
       });
     }); // valid auth and menu
 
-    // describe('with valid auth and INVALID menu', () => {
-    //   it('should return a new menu', done => {
-    //     request.get(`${url}/api/menu`)
-    //     .auth(exampleUser.username, exampleUser.password)
-    //     .send()
-    //     .end( (err, res) => {
-    //       //TODO: fill stufff in
-    //       done();
-    //     });
-    //   });
-    // }); // valid auth and invalid menu
-    //
-    // describe('with INVALID auth and valid menu', () => {
-    //   it('should return a 401', done => {
-    //     request.get(`${url}/api/signin`)
-    //     .auth(exampleUser.username, 'not_the_real_password')
-    //     .end( (err, res) => {
-    //       expect(res.status).to.equal(401);
-    //       done();
-    //     });
-    //   });
-    // }); // invalid auth
-    //
-    // describe('unknown username', () => {
-    //   it('should return a 401', done => {
-    //     request.get(`${url}/api/signin`)
-    //     .auth('not_a_user', exampleUser.password)
-    //     .end( (err, res) => {
-    //       expect(res.status).to.equal(401);
-    //       done();
-    //     });
-    //   });
-    // }); //unknown username
+    describe('with valid auth and INVALID menu', () => {
+      it('should return a new menu', done => {
+        request.get(`${url}/api/menu`)
+        .auth(exampleUser.username, exampleUser.password)
+        .send()
+        .end( (err, res) => {
+          //TODO: fill stufff in
+          done();
+        });
+      });
+    }); // valid auth and invalid menu
+
+    describe('with INVALID auth and valid menu', () => {
+      it('should return a 401', done => {
+        request.get(`${url}/api/signin`)
+        .auth(exampleUser.username, 'not_the_real_password')
+        .end( (err, res) => {
+          expect(res.status).to.equal(401);
+          done();
+        });
+      });
+    }); // invalid auth
+
+    describe('unknown username', () => {
+      it('should return a 401', done => {
+        request.get(`${url}/api/signin`)
+        .auth('not_a_user', exampleUser.password)
+        .end( (err, res) => {
+          expect(res.status).to.equal(401);
+          done();
+        });
+      });
+    }); //unknown username
 
   }); // POST /api/menu
 
