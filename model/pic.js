@@ -1,6 +1,6 @@
 'use strict';
 
-const Mongoose = require('mongoose');
+const mongoose = require('mongoose');
 
 module.exports = Mongoose.model('pic', Mongoose.Schema({
   businessId: { type: Mongoose.Schema.Types.ObjectId, required: true },
