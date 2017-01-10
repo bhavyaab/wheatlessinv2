@@ -49,17 +49,19 @@ menuRouter.post('/api/biz/:bizId/menu', bearerAuth, upload.single('image'), func
   };
 
   Biz.findById(req.params.bizId)
-  .then( () => s3uploadProm(params))
-  .then( s3data => {
-    del(req.file.path);
+  .then( biz => {
     let menuData = {
-      
-      objectKey: s3data.Key,
-      imageURI: s3data.Location,
-      bizId: req.params.bizId
+      bizId: req.params.bizId,
+      isCompletelyGlutenFree: req.body.bizId
     }
     return new Menu(menuData).save();
   })
-  .then( menu => res.json(menu))
+  .then( menu => {
+    biz.menuId = menu._id;
+    return biz.save();
+  });
+  .then( () => {
+    res.json(menu);
+  })
   .catch( err => next(err));
 });
