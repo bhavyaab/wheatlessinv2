@@ -65,7 +65,6 @@ describe('Biz-router-test', function(){
     biz.save()
     .then( biz => {
       this.biz = biz;
-      console.log(biz);
       done();
     })
     .catch(done);

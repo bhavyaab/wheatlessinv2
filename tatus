@@ -1,0 +1,16 @@
+[1mdiff --git a/package.json b/package.json[m
+[1mindex 4b3fb6a..e8abbf7 100644[m
+[1m--- a/package.json[m
+[1m+++ b/package.json[m
+[36m@@ -7,9 +7,9 @@[m
+     "test": "test"[m
+   },[m
+   "scripts": {[m
+[31m-    "test": "DEBUG='wheatlessinv2*' mocha",[m
+[32m+[m[32m    "test": "set DEBUG=wheatlessinv2* && mocha",[m
+     "coveralls": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",[m
+[31m-    "start": "DEBUG='wheatlessinv2*' node server.js",[m
+[32m+[m[32m    "start": "set DEBUG=wheatlessinv2* && node server.js",[m
+     "lint": "eslint server.js test/**/*.js route/**/*.js model/**/*.js lib/**/*.js"[m
+   },[m
+   "repository": {[m
