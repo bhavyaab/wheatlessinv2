@@ -4,9 +4,9 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const menuSchema = Schema({
-  //TODO: menuSchema needs to have an array of pics for multiple page menus
+    //TODO: menuSchema needs to have an array of pics for multiple page menus
   // picId: { type: Mongoose.Schema.Types.ObjectId },
-  bizId: { type: mongoose.Schema.Types.ObjectId, required: true },
+  bizId: { type: Schema.Types.ObjectId, required: true },
   isCompletelyGlutenFree: { type: Boolean, required: true, default: false },
   created: { type: Date, default: Date.now }
 });
