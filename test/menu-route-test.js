@@ -20,7 +20,6 @@ const exampleUser = {
   password: '123abc'
 };
 const exampleMenu = {
-  businessId: { type: mongoose.Schema.Types.ObjectId, required: true },
   isCompletelyGlutenFree: true,
 };
 const exampleBusiness = {
@@ -36,9 +35,10 @@ const examplePicPath = `${__dirname}/pic.jpg`;
 const url = `http://localhost:${process.env.PORT}`;
 
 function cleanup(done) {
-  User.remove({})
-  .then( () => done())
-  .catch(done);
+  Biz.remove({});
+  User.remove({});
+  Menu.remove({});
+  done();
 }
 
 describe('Menu routes', function() {
@@ -57,9 +57,9 @@ describe('Menu routes', function() {
     .then( generatedToken => {
       this.tempToken = generatedToken;
 
-      new Biz(exampleBusiness)
-      .save()
+      new Biz(exampleBusiness).save()
       .then( savedBiz => {
+        exampleMenu.bizId = savedBiz._id;
         this.tempBiz = savedBiz;
         done();
       })
@@ -68,72 +68,67 @@ describe('Menu routes', function() {
       done();
     })
     .catch(err => done(err));
-
-  });
+  }); //before everything
 
   after( done => {
     Toggle.serverOn(Server, done);
-  });
+  }); //after everything
 
   describe('POST /api/menu', function() {
 
     before( done => {
-      let menu = new Menu(exampleUser);
-      user.generatePasswordHash(exampleUser.password)
-      .then( user => user.save())
-      .then( user => {
-        this.tempUser = user;
-        done();
-      });
+      //this.tempMenu = new Menu(exampleMenu).save();
+      done();
     });
 
     after( done => cleanup(done));
 
     describe('with valid auth and valid menu', () => {
       it('should return a new menu', done => {
-        request.post(`${url}/api/menu`)
-        .set({isCompletelyGlutenFree: exampleMenu.isCompletelyGlutenFree, businessId: exampleBusiness._id})
-        .auth(exampleUser.username, exampleUser.password)
+        request.post(`${url}/api/biz/${this.tempBiz._id.toString()}/menu`)
+        .set({authorization: `Bearer ${this.tempToken}`})
         .send()
         .end( (err, res) => {
-          //TODO: fill stufff in
+          expect(res.status).to.equal(200);
           done();
         });
       });
     }); // valid auth and menu
 
-    describe('with valid auth and INVALID menu', () => {
-      it('should return a new menu', done => {
-        request.get(`${url}/api/menu`)
-        .auth(exampleUser.username, exampleUser.password)
-        .send()
-        .end( (err, res) => {
-          //TODO: fill stufff in
-          done();
-        });
-      });
-    }); // valid auth and invalid menu
+    // describe('with valid auth and INVALID menu', () => {
+    //   it('should return a new menu', done => {
+    //     request.get(`${url}/api/menu`)
+    //     .auth(exampleUser.username, exampleUser.password)
+    //     .send()
+    //     .end( (err, res) => {
+    //       //TODO: fill stufff in
+    //       done();
+    //     });
+    //   });
+    // }); // valid auth and invalid menu
+    //
+    // describe('with INVALID auth and valid menu', () => {
+    //   it('should return a 401', done => {
+    //     request.get(`${url}/api/signin`)
+    //     .auth(exampleUser.username, 'not_the_real_password')
+    //     .end( (err, res) => {
+    //       expect(res.status).to.equal(401);
+    //       done();
+    //     });
+    //   });
+    // }); // invalid auth
+    //
+    // describe('unknown username', () => {
+    //   it('should return a 401', done => {
+    //     request.get(`${url}/api/signin`)
+    //     .auth('not_a_user', exampleUser.password)
+    //     .end( (err, res) => {
+    //       expect(res.status).to.equal(401);
+    //       done();
+    //     });
+    //   });
+    // }); //unknown username
 
-    describe('with INVALID auth and valid menu', () => {
-      it('should return a 401', done => {
-        request.get(`${url}/api/signin`)
-        .auth(exampleUser.username, 'not_the_real_password')
-        .end( (err, res) => {
-          expect(res.status).to.equal(401);
-          done();
-        });
-      });
-    }); // invalid auth
+  }); // POST /api/menu
 
-    describe('unknown username', () => {
-      it('should return a 401', done => {
-        request.get(`${url}/api/signin`)
-        .auth('not_a_user', exampleUser.password)
-        .end( (err, res) => {
-          expect(res.status).to.equal(401);
-          done();
-        });
-      });
-    }); //unknown username
-  }); // GET /api/signin
 });
