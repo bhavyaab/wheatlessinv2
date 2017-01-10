@@ -115,7 +115,7 @@ describe('Biz-router-test', function(){
         EIN: '98-7654321',
       })
       .end( (err, res) => {
-        expect(res.status).to.equal(500);
+        expect(res.status).to.equal(400);
         done();
       });
     });
