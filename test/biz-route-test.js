@@ -59,17 +59,17 @@ describe('Biz-router-test', function(){
     })
     .catch(done);
   });
-  before({
+  before( done => {
     testbiz.userId = this.userId;
-    var  biz = new Biz(testbiz);
+    var biz = new Biz(testbiz);
     biz.save()
     .then( biz => {
       this.biz = biz;
+      console.log(biz);
       done();
     })
     .catch(done);
   });
-
   after( done => {
     User.remove({})
     .then( () => done())
@@ -159,7 +159,7 @@ describe('Biz-router-test', function(){
       });
     });
     it('GET: valid request with invalid id', done => {
-      request.get(`${url}/58756$$$38b87e0ef8482***`)
+      request.get(`${url}/'58756$$$38b87e0ef8482***'`)
       .end( (err, res) => {
         expect(res.status).to.equal(404);
         done();
@@ -170,47 +170,46 @@ describe('Biz-router-test', function(){
       .end( (err, res) => {
         if(err) return done(err);
         expect(res.status).to.equal(200);
+        expect(res.body.name).to.equal(testbiz.name);
+        expect(res.body._id).to.equal(`${this.biz._id}`);
+        expect(res.body.EIN).to.equal(testbiz.EIN);
         done();
       });
     });
   });
-  describe('PUT: api/biz/:id', () => {
-    debug('PUT: Route test');
-    it('PUT: should check for route invalid path', done => {
-      request.put(`http://localhost:${process.env.PORT}/put/bizzz`)
+  describe('DELETE: api/biz/:id', () => {
+    debug('DELETE: Route test');
+    it('DELETE: should check for route invalid path', done => {
+      request.delete(`http://localhost:${process.env.PORT}/put/bizzz`)
       .set({Authorization: `Bearer ${this.token}`})
       .end( (err, res) => {
         expect(res.status).to.equal(404);
         done();
       });
     });
-    it('PUT: test for invalid token', done => {
+    it('DELETE: test for invalid token', done => {
       debug('valid body with invalid request');
-      request.put(`${url}/${this.biz._id}`)
+      request.delete(`${url}/${this.biz._id}`)
+      .set({Authorization: `Bearer ${this.token}`})
+      .end( (err, res) => {
+        expect(res.status).to.equal(204);
+        done();
+      });
+    });
+    it('DELETE: valid request with invalid id', done => {
+      request.delete(`${url}/58756$$$38b87e0ef8482***`)
       .set({Authorization: `Bearer ${this.token}`})
       .end( (err, res) => {
         expect(res.status).to.equal(404);
         done();
       });
     });
-    it('PUT: valid request with invalid id', done => {
-      request.put(`${url}/58756$$$38b87e0ef8482***`)
+    it('DELETE: valid request with valid id', done => {
+      request.delete(`${url}/${this.biz._id}`)
       .set({Authorization: `Bearer ${this.token}`})
-      .end( (err, res) => {
-        expect(res.status).to.equal(404);
-        done();
-      });
-    });
-    it('PUT: valid request with valid id', done => {
-      request.put(`${url}/${this.biz._id}`)
-      .set({Authorization: `Bearer ${this.token}`})
-      .send({
-        name: 'update name',
-        EIN: '23-7654321',
-      })
       .end( (err, res) => {
         if(err) return done(err);
-        expect(res.status).to.equal(200);
+        expect(res.status).to.equal(204);
         done();
       });
     });
