@@ -49,23 +49,24 @@ menuRouter.post('/api/biz/:bizId/menu', bearerAuth, function(req, res, next) {
   //   Key: `${req.file.filename}${ext}`,
   //   Body: fs.createReadStream(req.file.path)
   // };
-
+  let tempBiz;
+  let tempMenu;
   Biz.findById(req.params.bizId)
   .then( biz => {
-    this.biz = biz;
+    tempBiz = biz;
     let menuData = {
-      bizId: req.params.bizId,
-      isCompletelyGlutenFree: req.body.bizId
+      bizId: req.params.bizId
+      // isCompletelyGlutenFree: req.body.isCompletelyGlutenFree
     };
     return new Menu(menuData).save();
   })
   .then( menu => {
-    this.menu = menu;
-    this.biz.menuId = menu._id;
-    return this.biz.save();
+    tempMenu = menu;
+    tempBiz.menuId = menu._id;
+    return tempBiz.save();
   })
   .then( () => {
-    res.json(this.menu);
+    res.json(tempMenu);
   })
   .catch( err => next(err));
 });
