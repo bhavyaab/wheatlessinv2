@@ -8,8 +8,9 @@ mongoose.Promise = Promise;
 
 const User = require('../model/user.js');
 
-//TODO: Refactor to use our /lib helpers
-require('../server.js');
+const Toggle = require('./lib/server-toggle.js');
+require('./lib/test-env.js');
+const Server = require('../server.js');
 
 const exampleUser = {
   username: 'theexampleplayer',
@@ -26,6 +27,15 @@ function cleanup(done) {
 }
 
 describe('Auth Routes', function() {
+
+  before( done => {
+    Toggle.serverOn(Server, done);
+  });
+
+  after( done => {
+    Toggle.serverOn(Server, done);
+  });
+
   describe('GET /some/bogus/route', function() {
     it('should return a 404', done => {
       request.get(`${url}/some/bogus/route`)
