@@ -44,11 +44,14 @@ bizRouter.delete('/api/biz/:id', bearerAuth, function(req, res, next) {
 });
 
 //PUBLIC access to search, although we may want to try to lock down the CORS
-// bizRouter.get('/api/biz/search', function(req, res, next) {
 bizRouter.get('/api/biz', function(req, res, next) {
-  //TODO: look for search params.
-  //TODO: If no search params, should we show a list of all biz ids?
-  //      That could mean a pretty big, unsorted list.
-  //      I recommend that we require at least 1 search param.
-  next();
+  debug('GET /api/biz q:', req.query);
+
+  let lowerLeft  = req.query.southwest.split(',');
+  let upperRight = req.query.northeast.split(',');
+
+  Biz.where('loc')
+  .within().box(lowerLeft, upperRight)
+  .then( bizs => res.json(bizs))
+  .catch(next);
 });
