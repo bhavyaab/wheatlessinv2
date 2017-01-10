@@ -12,6 +12,7 @@ mongoose.Promise = Promise;
 const menuRouter = require('./route/menu-router.js');
 const authRouter = require('./route/auth-router.js');
 const bizRouter = require('./route/biz-router.js');
+const picRouter = require('./route/pic-router.js');
 const errors = require('./lib/error-middleware.js');
 
 dotenv.load();
@@ -28,6 +29,7 @@ app.use(morgan('dev'));
 app.use(authRouter);
 app.use(menuRouter);
 app.use(bizRouter);
+app.use(picRouter);
 app.use(errors);
 
 const server = module.exports = app.listen(PORT, () => {

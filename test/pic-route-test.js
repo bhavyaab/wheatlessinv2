@@ -61,7 +61,7 @@ describe('Pic Routes', function() {
   describe('POST /api/menu/:menuId/pic', () => {
     describe('with a valid menuId and pic', () => {
       it('should return a pic object', done => {
-        request.post(`${url}/api/${this.menu._id}/pic`)
+        request.post(`${url}/api/menu/${this.menu._id}/pic`)
         .set({
           Authorization: `Bearer ${this.user.token}`
         })
