@@ -30,7 +30,7 @@ const exampleBusiness = {
   email: 'food@food.food',
   phone: '123-456-7890'
 };
-const examplePicPath = `${__dirname}/pic.jpg`;
+//const examplePicPath = `${__dirname}/pic.jpg`;
 
 const url = `http://localhost:${process.env.PORT}`;
 
