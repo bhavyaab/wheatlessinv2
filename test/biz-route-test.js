@@ -43,16 +43,6 @@ describe('Biz-router-test', function(){
     .catch(done);
   });
   before( done => {
-    testbiz.userId = this.userId;
-    var biz = new Biz(testbiz);
-    biz.save()
-    .then( biz => {
-      this.biz = biz;
-      done();
-    })
-    .catch(done);
-  });
-  before( done => {
     var newUser = new User({
       username: 'FakeUser',
       email: 'fakeUser@test.com',
@@ -66,6 +56,16 @@ describe('Biz-router-test', function(){
         user.remove();
         done();
       });
+    })
+    .catch(done);
+  });
+  before({
+    testbiz.userId = this.userId;
+    var  biz = new Biz(testbiz);
+    biz.save()
+    .then( biz => {
+      this.biz = biz;
+      done();
     })
     .catch(done);
   });
@@ -116,8 +116,7 @@ describe('Biz-router-test', function(){
         EIN: '98-7654321',
       })
       .end( (err, res) => {
-        expect(res.status).to.equal(404);
-        expect(res.text).to.equal('Not Found');
+        expect(res.status).to.equal(500);
         done();
       });
     });
@@ -154,18 +153,65 @@ describe('Biz-router-test', function(){
     debug('GET: Route test');
     it('GET: should check for route invalid path', done => {
       request.get(`http://localhost:${process.env.PORT}/api/bizzz`)
+      .end( (err, res) => {
+        expect(res.status).to.equal(404);
+        done();
+      });
+    });
+    it('GET: valid request with invalid id', done => {
+      request.get(`${url}/58756$$$38b87e0ef8482***`)
+      .end( (err, res) => {
+        expect(res.status).to.equal(404);
+        done();
+      });
+    });
+    it('GET: valid request with valid id', done => {
+      request.get(`${url}/${this.biz._id}`)
+      .end( (err, res) => {
+        if(err) return done(err);
+        expect(res.status).to.equal(200);
+        done();
+      });
+    });
+  });
+  describe('PUT: api/biz/:id', () => {
+    debug('PUT: Route test');
+    it('PUT: should check for route invalid path', done => {
+      request.put(`http://localhost:${process.env.PORT}/put/bizzz`)
       .set({Authorization: `Bearer ${this.token}`})
       .end( (err, res) => {
         expect(res.status).to.equal(404);
         done();
       });
-      it('GET: should check for route invalid token', done => {
-        request.get(`${url}`)
-        .set({Authorization: `Bearer ${this.newToken}`})
-        .end( (err, res) => {
-          expect(res.status).to.equal(404);
-          done();
-        });
+    });
+    it('PUT: test for invalid token', done => {
+      debug('valid body with invalid request');
+      request.put(`${url}/${this.biz._id}`)
+      .set({Authorization: `Bearer ${this.token}`})
+      .end( (err, res) => {
+        expect(res.status).to.equal(404);
+        done();
+      });
+    });
+    it('PUT: valid request with invalid id', done => {
+      request.put(`${url}/58756$$$38b87e0ef8482***`)
+      .set({Authorization: `Bearer ${this.token}`})
+      .end( (err, res) => {
+        expect(res.status).to.equal(404);
+        done();
+      });
+    });
+    it('PUT: valid request with valid id', done => {
+      request.put(`${url}/${this.biz._id}`)
+      .set({Authorization: `Bearer ${this.token}`})
+      .send({
+        name: 'update name',
+        EIN: '23-7654321',
+      })
+      .end( (err, res) => {
+        if(err) return done(err);
+        expect(res.status).to.equal(200);
+        done();
       });
     });
   });
