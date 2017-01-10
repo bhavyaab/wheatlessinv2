@@ -1,13 +1,14 @@
-//Kyler Dotson
 'use strict';
 
-const Mongoose = require('mongoose');
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-module.exports = Mongoose.model('menu', Mongoose.Schema({
-  //TODO: picId -> pic: { type: ObjectId }
-  picId: { type: String, required: true, unique: true },
-  //TODO: A menu could have multiple "pages", so an array of pics.
-  businessId: { type: Mongoose.Schema.Types.ObjectId, required: true },
-  isCompletelyGlutenFree: { type: Boolean, required: true },
+  const menuSchema = Schema({
+    //TODO: menuSchema needs to have an array of pics for multiple page menus
+  // picId: { type: Mongoose.Schema.Types.ObjectId },
+  bizId: { type: Mongoose.Schema.Types.ObjectId, required: true },
+  isCompletelyGlutenFree: { type: Boolean, required: true default: false },
   created: { type: Date, default: Date.now }
 }));
+
+module.exports = mongoose.model('menu', menuSchema);
