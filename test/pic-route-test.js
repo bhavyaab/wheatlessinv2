@@ -1,3 +1,3 @@
-'use strict';
-
-require('./lib/test-env.js');
+// 'use strict';
+//
+// require('./lib/test-env.js');
