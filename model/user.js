@@ -10,6 +10,7 @@ const createError = require('http-errors');
 const Schema = mongoose.Schema;
 
 const userSchema = Schema({
+  //TODO: Use email as the username
   username: { type: String, required: true, unique: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
@@ -21,6 +22,7 @@ userSchema.methods.generatePasswordHash = function(password) {
 
   return new Promise( (resolve, reject) => {
     bcrypt.hash(password, 10, (err, hash) => {
+      //TODO: Should err return a 401?
       if(err) return reject(createError(400, 'hash failed'));
       this.password = hash;
       //TODO: Q: Should we call this.save() and resolve in then?

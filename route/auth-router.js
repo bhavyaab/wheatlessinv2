@@ -24,6 +24,7 @@ authRouter.post('/api/signup', jsonParser, function(req, res, next) {
   .catch(next);
 });
 
+//TODO: Replace basicAuth with POST and no middleware.
 authRouter.get('/api/signin', basicAuth, function(req, res, next) {
   debug('GET /api/signin');
 
