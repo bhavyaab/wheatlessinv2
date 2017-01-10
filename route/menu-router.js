@@ -1,34 +1,36 @@
 'use strict';
 
-const fs = require('fs');
-const path = require('path');
-const del = require('del');
+// const fs = require('fs');
+// const path = require('path');
+// const del = require('del');
 const AWS = require('aws-sdk');
-const multer = require('multer');
+// const multer = require('multer');
 const Router = require('express').Router;
-const createError = require('http-errors');
+// const createError = require('http-errors');
 const debug = require('debug')('wheatlessinv2:menu-router');
 
 const Menu = require('../model/menu.js');
+const Biz = require('../model/biz.js');
 const bearerAuth = require('../lib/bearer-auth-middleware.js');
 
 AWS.config.setPromisesDependency(require('bluebird'));
 
-const s3 = new AWS.S3();
-const dataDir = `${__dirname}/../data`
-const upload = multer({ dest: dataDir });
+// const s3 = new AWS.S3();
+// const dataDir = `${__dirname}/../data`;
+// const upload = multer({ dest: dataDir });
 
-const menuRouter = module.exports = Router();
+const menuRouter = module.exports = new Router();
 
-function s3uploadProm(params) {
-  return new Promise((resolve, reject) => {
-    s3.upload(params, (err, s3data) => {
-      resolve(s3data);
-    });
-  });
-}
+// function s3uploadProm(params) {
+//   return new Promise((resolve, reject) => {
+//     s3.upload(params, (err, s3data) => {
+//       resolve(s3data);
+//     });
+//   });
+// }
 
-menuRouter.post('/api/biz/:bizId/menu', bearerAuth, upload.single('image'), function(req, res, next) {
+// menuRouter.post('/api/biz/:bizId/menu', bearerAuth, upload.single('image'), function(req, res, next) {
+menuRouter.post('/api/biz/:bizId/menu', bearerAuth, function(req, res, next) {
   debug('POST /api/biz/:bizId/menu');
 
   // if (!req.file) {
@@ -50,18 +52,20 @@ menuRouter.post('/api/biz/:bizId/menu', bearerAuth, upload.single('image'), func
 
   Biz.findById(req.params.bizId)
   .then( biz => {
+    this.biz = biz;
     let menuData = {
       bizId: req.params.bizId,
       isCompletelyGlutenFree: req.body.bizId
-    }
+    };
     return new Menu(menuData).save();
   })
   .then( menu => {
-    biz.menuId = menu._id;
-    return biz.save();
+    this.menu = menu;
+    this.biz.menuId = menu._id;
+    return this.biz.save();
   })
   .then( () => {
-    res.json(menu);
+    res.json(this.menu);
   })
   .catch( err => next(err));
 });
