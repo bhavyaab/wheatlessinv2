@@ -79,9 +79,12 @@ describe('Menu routes', function() {
     describe('with valid auth and valid menu', () => {
       it('should return a new menu', done => {
         request.post(`${url}/api/biz/${this.tempBiz._id.toString()}/menu`)
+        .field('isCompletelyGlutenFree', exampleMenu.isCompletelyGlutenFree)
         .set({authorization: `Bearer ${this.tempUser.token}`})
         .end( (err, res) => {
           expect(res.status).to.equal(200);
+          expect(res.body.bizId).to.equal(this.tempBiz._id.toString());
+          expect(res.body.isCompletelyGlutenFree).to.equal(exampleMenu.isCompletelyGlutenFree);
           done();
         });
       });
