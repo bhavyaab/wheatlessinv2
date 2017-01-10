@@ -134,6 +134,7 @@ describe('Biz-router-test', function(){
           expect(res.status).to.equal(404);
           done();
         });
+      });
     });
   });
 });
