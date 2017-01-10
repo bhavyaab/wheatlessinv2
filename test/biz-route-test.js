@@ -29,6 +29,8 @@ const testbiz = {
 const url = `http://localhost:${process.env.PORT}/api/biz`;
 
 describe('Biz-router-test', function(){
+ Biz.remove({})
+ .then( () => console.log('done'));
   debug('bizRouter');
   before( done => {
     var user = new User(testUser);
@@ -72,7 +74,7 @@ describe('Biz-router-test', function(){
   });
   describe('Biz:POST route', () => {
     debug('Biz: POST route');
-    it('should test for invalid path', done => {
+    it('POST: test for invalid path', done => {
       debug('valid body with invalid request');
       request.post(`${url}/abcd`)
       .send(testbiz)
@@ -81,7 +83,7 @@ describe('Biz-router-test', function(){
         done();
       });
     });
-    it('should test for missing token', done => {
+    it('POST: test for missing token', done => {
       debug('valid body with invalid request');
       request.post(`${url}`)
       .send(testbiz)
@@ -91,18 +93,18 @@ describe('Biz-router-test', function(){
         done();
       });
     });
-    it('should test for invalid token', done => {
+    it('POST: test for invalid token', done => {
       debug('valid body with invalid request');
       request.post(`${url}`)
       .set({Authorization: `Bearer ${this.newToken}`})
       .send(testbiz)
       .end( (err, res) => {
-        expect(res.status).to.equal(401);
+        expect(res.status).to.equal(404);
         expect(res.text).to.equal('Not Found');
         done();
       });
     });
-    it('missing body', done => {
+    it('POST: missing body', done => {
       debug('missing body with valid request');
       request.post(`${url}`)
       .set({Authorization: `Bearer ${this.token}`})
