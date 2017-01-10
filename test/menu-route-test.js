@@ -16,7 +16,7 @@ require('./lib/test-env.js');
 require('../server.js');
 
 const exampleMenu = {
-  isCompletelyGlutenFree: true,
+  isCompletelyGlutenFree: true
 };
 
 const url = `http://localhost:${process.env.PORT}`;
@@ -91,13 +91,13 @@ describe('Menu routes', () => {
     }); // valid auth and invalid menu - iCGF flag set
 
     describe('with INVALID auth and valid menu', () => {
-      it('should return a 401', done => {
+      it('should return a 403', done => {
         request.post(`${url}/api/biz/${this.tempBiz1._id.toString()}/menu`)
         .field('isCompletelyGlutenFree', exampleMenu.isCompletelyGlutenFree)
         .set({authorization: 'Bearer badtoken123'})
         .end( (err, res) => {
           expect(err).to.be.an('error');
-          expect(res.status).to.equal(401);
+          expect(res.status).to.equal(403);
           done();
         });
       });
