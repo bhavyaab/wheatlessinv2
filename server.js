@@ -8,7 +8,8 @@ const mongoose = require('mongoose');
 const Promise = require('bluebird');
 const debug = require('debug')('wheatlessinv2:server');
 
-//const picRouter = require('./route/pic-router.js');
+mongoose.Promise = Promise;
+const menuRouter = require('./route/menu-router.js');
 const authRouter = require('./route/auth-router.js');
 const bizRouter = require('./route/biz-router.js');
 const errors = require('./lib/error-middleware.js');
@@ -23,8 +24,8 @@ mongoose.connect(process.env.MONGODB_URI);
 app.use(cors());
 app.use(morgan('dev'));
 
-//app.use(picRouter);
 app.use(authRouter);
+app.use(menuRouter);
 app.use(bizRouter);
 app.use(errors);
 

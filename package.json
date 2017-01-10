@@ -2,7 +2,7 @@
   "name": "wheatlessinv2",
   "version": "1.0.0",
   "description": "",
-  "main": "gulpfile.js",
+  "main": "server.js",
   "directories": {
     "test": "test"
   },
