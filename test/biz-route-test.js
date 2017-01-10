@@ -29,8 +29,6 @@ const testbiz = {
 const url = `http://localhost:${process.env.PORT}/api/biz`;
 
 describe('Biz-router-test', function(){
- Biz.remove({})
- .then( () => console.log('done'));
   debug('bizRouter');
   before( done => {
     var user = new User(testUser);
@@ -40,6 +38,16 @@ describe('Biz-router-test', function(){
     .then( token => {
       this.token = token;
       this.userId = user._id;
+      done();
+    })
+    .catch(done);
+  });
+  before( done => {
+    testbiz.userId = this.userId;
+    var biz = new Biz(testbiz);
+    biz.save()
+    .then( biz => {
+      this.biz = biz;
       done();
     })
     .catch(done);
@@ -77,7 +85,10 @@ describe('Biz-router-test', function(){
     it('POST: test for invalid path', done => {
       debug('valid body with invalid request');
       request.post(`${url}/abcd`)
-      .send(testbiz)
+      .send({
+        name: 'testBiz',
+        EIN: '98-7654321',
+      })
       .end( (err, res) => {
         expect(res.status).to.equal(404);
         done();
@@ -86,7 +97,10 @@ describe('Biz-router-test', function(){
     it('POST: test for missing token', done => {
       debug('valid body with invalid request');
       request.post(`${url}`)
-      .send(testbiz)
+      .send({
+        name: 'testBiz',
+        EIN: '98-7654321',
+      })
       .end( (err, res) => {
         expect(res.status).to.equal(401);
         expect(res.text).to.equal('UnauthorizedError');
@@ -97,7 +111,10 @@ describe('Biz-router-test', function(){
       debug('valid body with invalid request');
       request.post(`${url}`)
       .set({Authorization: `Bearer ${this.newToken}`})
-      .send(testbiz)
+      .send({
+        name: 'testBiz',
+        EIN: '98-7654321',
+      })
       .end( (err, res) => {
         expect(res.status).to.equal(404);
         expect(res.text).to.equal('Not Found');
@@ -118,15 +135,37 @@ describe('Biz-router-test', function(){
       debug('valid body with valid request');
       request.post(`${url}`)
       .set({Authorization: `Bearer ${this.token}`})
-      .send(testbiz)
+      .send({
+        name: 'testBiz',
+        EIN: '98-7654321',
+      })
       .end( (err, res) => {
         if(err) return done(err);
-        expect(res.body.name).to.equal(testbiz.name);
-        expect(res.body.EIN).to.equal(testbiz.EIN);
+        expect(res.body.name).to.equal( 'testBiz');
+        expect(res.body.EIN).to.equal('98-7654321');
         expect(res.body).to.have.property('userId');
         expect(res.body.userId).to.equal(`${this.userId}`);
         expect(res.status).to.equal(200);
         done();
+      });
+    });
+  });
+  describe('GET: api/biz/:id', () => {
+    debug('GET: Route test');
+    it('GET: should check for route invalid path', done => {
+      request.get(`http://localhost:${process.env.PORT}/api/bizzz`)
+      .set({Authorization: `Bearer ${this.token}`})
+      .end( (err, res) => {
+        expect(res.status).to.equal(404);
+        done();
+      });
+      it('GET: should check for route invalid token', done => {
+        request.get(`${url}`)
+        .set({Authorization: `Bearer ${this.newToken}`})
+        .end( (err, res) => {
+          expect(res.status).to.equal(404);
+          done();
+        });
       });
     });
   });
