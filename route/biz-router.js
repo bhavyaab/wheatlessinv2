@@ -14,7 +14,6 @@ const bizRouter = module.exports = Router();
 bizRouter.post('/api/biz', bearerAuth, jsonParser, function(req, res, next) {
   debug('POST /api/biz');
 
-  // NOTE: getting here with req.user undefined.
   req.body.userId = req.user._id;
   new Biz(req.body).save()
   .then( biz => res.json(biz))
