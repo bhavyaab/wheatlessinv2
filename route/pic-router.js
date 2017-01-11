@@ -64,10 +64,17 @@ picRouter.post('/api/menu/:menuId/pic', bearerAuth, upload.single('image'), func
     Body: fs.createReadStream(req.file.path)
   };
 
+
+  let tempMenu;
   Menu.findById(req.params.menuId)
   .catch( err => next(createError(404, err.message)))
-  .then( () => s3uploadProm(params))
+  .then( foundMenu => {
+    tempMenu = foundMenu;
+    s3uploadProm(params);
+  })
   .then( s3data => {
+    tempMenu.picURI = s3data.Location;
+    tempMenu.save();
     del(req.file.path);
     return new Pic({
       userId: req.user._id,
