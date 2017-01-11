@@ -36,3 +36,17 @@ menuRouter.post('/api/biz/:bizId/menu', jsonParser, bearerAuth, function(req, re
   })
   .catch( err => next(err));
 });
+
+menuRouter.get('/api/biz/:bizId/menu', bearerAuth, function(req, res, next) {
+  debug('GET /api/biz/:bizId/menu');
+
+  Biz.findById(req.params.bizId)
+  .then( foundBiz => {
+    debug('found biz:', foundBiz);
+    Menu.findById(foundBiz.menu)
+    .then( foundMenu => res.json(foundMenu))
+    .catch(err => next(createError(404, `could not find menu: ${err.message}`)));
+  })
+  .catch(err => next(createError(404, `could not find business: ${err.message}`)));
+
+});

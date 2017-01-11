@@ -1,5 +1,6 @@
 'use strict';
 
+const debug = require('debug')('wheatlessinv2:menu-route-test');
 const expect = require('chai').expect;
 const request = require('superagent');
 const mongoose = require('mongoose');
@@ -120,5 +121,51 @@ describe('Menu routes', () => {
     }); //valid auth, bad biz id
 
   }); // POST /api/menu
+
+  describe('GET /api/biz/:bizId/menu', () => {
+
+    before( done => {
+
+      mockUser()
+      .then( newMockedUser => {
+        this.tempUser = newMockedUser;
+        return mockBiz(newMockedUser);
+      })
+      .then( newMockedBiz => {
+        this.tempBiz = newMockedBiz;
+        let thisBizsNewMenu = exampleMenu;
+        thisBizsNewMenu.bizId = newMockedBiz._id;
+        return new Menu(thisBizsNewMenu).save();
+      })
+      .then( savedMenu => {
+        this.tempMenu = savedMenu;
+        debug('savedmenu id:', savedMenu._id);
+        //this.tempBiz.menu = savedMenu._id;
+        return this.tempBiz.save();
+      })
+      .then(done)
+      .catch(done);
+
+    });
+
+    describe('with valid authentication and valid menu ID', () => {
+      it('returns a menu', done => {
+        request.get(`${url}/api/biz/${this.tempBiz._id.toString()}/menu`)
+        .set({authorization: `Bearer ${this.tempUser.token}`})
+        .end( (err, res) => {
+          debug('res.body:', res.body);
+          expect(res.status).to.equal(200);
+          done();
+        });
+      });
+    }); //valid auth, bad biz id
+
+
+    after( () => {
+      debug('tempBiz', this.tempBiz);
+      debug('tempMenu', this.tempMenu);
+    });
+
+  });
 
 });
