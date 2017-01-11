@@ -71,6 +71,7 @@ describe('Pic Routes', function() {
           expect(res.body.userId).to.equal(this.user._id.toString());
           expect(res.body.imageURI).to.equal(awsMocks.uploadMock.Location);
           expect(res.body.objectKey).to.equal(awsMocks.uploadMock.Key);
+          //expect(this.menu.picURI).to.equal(res.body.imageURI);
           done();
         });
       });

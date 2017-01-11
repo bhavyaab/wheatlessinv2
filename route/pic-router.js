@@ -73,8 +73,8 @@ picRouter.post('/api/menu/:menuId/pic', bearerAuth, upload.single('image'), func
     s3uploadProm(params);
   })
   .then( s3data => {
-    tempMenu.picURI = s3data.Location;
-    tempMenu.save();
+    //tempMenu.picURI = s3data.Location;
+    //tempMenu.save();
     del(req.file.path);
     return new Pic({
       userId: req.user._id,
