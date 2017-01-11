@@ -5,7 +5,7 @@ const Schema = mongoose.Schema;
 
 const menuSchema = Schema({
     //TODO: menuSchema needs to have an array of pics for multiple page menus
-  // picId: { type: Mongoose.Schema.Types.ObjectId },
+  picURI: { type: String },
   bizId: { type: Schema.Types.ObjectId, required: true },
   isCompletelyGlutenFree: { type: Boolean, default: false },
   created: { type: Date, default: Date.now }

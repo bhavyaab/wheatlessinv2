@@ -5,7 +5,7 @@ require('./lib/test-env.js');
 const awsMocks = require('./lib/aws-mocks.js');
 const expect = require('chai').expect;
 const request = require('superagent');
-// const debug = require('debug')('wheatlessinv2:pic-route-test');
+//const debug = require('debug')('wheatlessinv2:pic-route-test');
 
 const User = require('../model/user.js');
 const Biz  = require('../model/biz.js');
@@ -71,7 +71,10 @@ describe('Pic Routes', function() {
           expect(res.body.userId).to.equal(this.user._id.toString());
           expect(res.body.imageURI).to.equal(awsMocks.uploadMock.Location);
           expect(res.body.objectKey).to.equal(awsMocks.uploadMock.Key);
-          done();
+          Menu.findById(this.menu._id).then(foundMenu => {
+            expect(foundMenu.picURI).to.equal(res.body.imageURI);
+          })
+          .then(done);
         });
       });
     }); // valid menuId and pic
