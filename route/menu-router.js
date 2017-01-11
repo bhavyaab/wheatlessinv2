@@ -19,6 +19,9 @@ menuRouter.post('/api/biz/:bizId/menu', jsonParser, bearerAuth, function(req, re
   Biz.findById(req.params.bizId)
   .then( biz => {
     if (!biz) return next(createError(400, 'Business Does Not Exist'));
+    if (biz.userId.toString() !== req.user._id.toString()) {
+      return Promise.reject(next(createError(400, 'Invalid User')));
+    }
     tempBiz = biz;
     req.body.bizId = biz._id;
     return new Menu(req.body).save();
