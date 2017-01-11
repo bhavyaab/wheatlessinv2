@@ -89,7 +89,6 @@ picRouter.post('/api/menu/:menuId/pic', bearerAuth, upload.single('image'), func
     ])
     .then( () => {
       del(req.file.path);
-      debug('tempMenu:', tempMenu);
       return tempPic;
     });
 
