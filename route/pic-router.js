@@ -66,22 +66,33 @@ picRouter.post('/api/menu/:menuId/pic', bearerAuth, upload.single('image'), func
 
 
   let tempMenu;
+  let tempPic;
   Menu.findById(req.params.menuId)
   .catch( err => next(createError(404, err.message)))
   .then( foundMenu => {
     tempMenu = foundMenu;
-    s3uploadProm(params);
+    return s3uploadProm(params);
   })
   .then( s3data => {
-    //tempMenu.picURI = s3data.Location;
-    //tempMenu.save();
-    del(req.file.path);
-    return new Pic({
+
+    tempMenu.picURI = s3data.Location;
+    tempPic = new Pic({
       userId: req.user._id,
       menuId: req.params.menuId,
       imageURI: s3data.Location,
       objectKey: s3data.Key
-    }).save();
+    });
+
+    return Promise.all([
+      tempMenu.save(),
+      tempPic.save()
+    ])
+    .then( () => {
+      del(req.file.path);
+      debug('tempMenu:', tempMenu);
+      return tempPic;
+    });
+
   })
   .then( pic => res.json(pic))
   .catch(next);
