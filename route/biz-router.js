@@ -3,7 +3,7 @@
 const Router = require('express').Router;
 const jsonParser = require('body-parser').json();
 const createError = require('http-errors');
-const debug = require('debug')('wheatlessinv2');
+const debug = require('debug')('wheatlessinv2:biz-router');
 
 const bearerAuth = require('../lib/bearer-auth-middleware.js');
 const Biz = require('../model/biz.js');
