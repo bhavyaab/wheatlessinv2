@@ -29,8 +29,8 @@ const queryContains = {
 };
 
 const queryNotContains = {
-  southwest: '-100.1,50',
-  northeast: '-100,50.1'
+  southwest: '50,-100.1',
+  northeast: '50.1,-100'
 };
 
 describe('Search Route', function() {
@@ -95,6 +95,76 @@ describe('Search Route', function() {
           done();
         });
       });
-    }); // valid box
+    }); // empty box
+
+    describe('missing southwest', () => {
+      it('should return a 400', done => {
+        request.get(url)
+        .query({ northeast: `${north},${east}` })
+        .end( (err, res) => {
+          expect(res.status).to.equal(400);
+          //TODO: check the res.text for correct error msg.
+          done();
+        });
+      });
+    }); // missing southwest
+
+    describe('missing northeast', () => {
+      it('should return a 400', done => {
+        request.get(url)
+        .query({ southwest: `${south},${west}` })
+        .end( (err, res) => {
+          expect(res.status).to.equal(400);
+          //TODO: check the res.text for correct error msg.
+          done();
+        });
+      });
+    }); // missing northeast
+
+    describe('contains out of bounds latitude', () => {
+      it('should return a 400', done => {
+        request.get(url)
+        .query({
+          southwest: `${south},${west}`,
+          northeast: '150,100' //150 > 90
+        })
+        .end( (err, res) => {
+          expect(res.status).to.equal(400);
+          //TODO: check the res.text for correct error msg.
+          done();
+        });
+      });
+    }); // invalid latitude
+
+    describe('contains out of bounds longitude', () => {
+      it('should return a 400', done => {
+        request.get(url)
+        .query({
+          southwest: `${south},${west}`,
+          northeast: '45,500' //500 > 180
+        })
+        .end( (err, res) => {
+          expect(res.status).to.equal(400);
+          //TODO: check the res.text for correct error msg.
+          done();
+        });
+      });
+    }); // invalid longitude
+
+    //
+    // describe('box size exceeds max area', () => {
+    //
+    // }); // box exceeds max size
+
+    describe('missing query', () => {
+      it('should return a 400', done => {
+        request.get(url)
+        .end( (err, res) => {
+          expect(res.status).to.equal(400);
+          //TODO: check the res.text for correct error msg.
+          done();
+        });
+      });
+    }); // missing query
   }); // GET /api/biz?southwest=<lat,lng>&norteast=<lat,lng>
 });
