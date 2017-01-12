@@ -115,7 +115,7 @@ describe('Pic Routes', function() {
          Authorization: `Bearer ${this.user.token}`
        })
        .end( (err, res) => {
-         expect(res.status).to.equal(500);
+         expect(res.status).to.equal(404);
          done();
        });
       });

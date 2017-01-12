@@ -103,6 +103,7 @@ picRouter.delete('/api/pic/:picId', bearerAuth, jsonParser, function(req, res, n
 
   Pic.findById(req.params.picId)
   .then( pic => {
+    if(!req.user) return Promise.reject(createError(404, 'not found'));
     if(`${req.user._id}` != `${pic.userId}`) return Promise.reject(createError(403, 'access denied'));
     var params = {
       Bucket: process.env.AWS_BUCKET,
@@ -117,5 +118,5 @@ picRouter.delete('/api/pic/:picId', bearerAuth, jsonParser, function(req, res, n
       return res.json(data);
     });
   })
-  .catch(next);
+  .catch(err => next(createError(404, err.message)));
 });
