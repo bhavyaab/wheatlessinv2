@@ -41,7 +41,9 @@ This API is structured on a Middleware(Authentication and Error catching), Model
 Example:  
 
  **User Signup**  POST http://wheatlessinv2.herokuapp.com/api/signup
- Required Data: Provide username, password, email as JSON
+ 
+Required Data: Provide username, password, email as JSON
+
 This route will create a new user by providing a username, password, and email in the body of the request. Creating a new user is required to store and access data later. This route must be completed before attempting to use the api/signin route.
 
 Example request:
@@ -65,9 +67,12 @@ A token will be returned that will only be used for the api/signin route. after 
 ___
 **Biz Post**
 Example:https://wheatlessinv2.herokuapp.com/api/biz
+
 Required Data:
+
 Business name and EIN number is the minimun required parameter for signup.
 This route will authenticate the user and post business that contains a minimum required parameter.
+
 
 Authorization Header
 Bearer <response token from signin>
@@ -110,14 +115,19 @@ more information a bizness can have are:
 
 ___
 **Biz menu Post**
+
 Example:https://wheatlessinv2.herokuapp.com/api/biz/58768d9db3bd9616805d8d0e/menu
+
 Required Data:
+
 No minimun required parameter for posting menu, after generating menu menu can be posted as menu.
 This route will authenticate the user and business and post menu.
+
 
 Authorization Header
 Bearer <response token from signin>
 it will be returned in JSON format once a user's token is verified. The response will contain a compleate menu information as it was provided.
+
 
 Example request:
 ```
@@ -144,9 +154,12 @@ X-Powered-By: Express
 ___
 **Pic Post**
 Example:https://wheatlessinv2.herokuapp.com/api/biz
+
 Required Data:
+
 image file path.
 This route will authenticate the user and post business that contains a minimum required parameter.
+
 
 Authorization Header
 Bearer <response token from signin>
@@ -154,7 +167,7 @@ it will be returned in JSON format once a user's token is verified. The response
 
  Example request:
  ```
- http --form POST localhost:8000/api/menu/5876a29db3d3061c3c93b88e/pic Authorization:'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6Ijg1M2ZhODFiNGU1ZjE3MGI0YmVhZGNjMDU3YmM1OTM2YzhhMzk2M2VhNmY1NGM1YTljYjAwNjUxNGZjYmJhNTQiLCJpYXQiOjE0ODQxN zA2ODB9.FSADbMng2-yI2bFSr2Cx2P__hpXiLFJPH033RuhRwAg' image@./test/data/pic.jpg
+ http --form POST wheatlessinv2.herokuapp.com/api/menu/5876a29db3d3061c3c93b88e/pic Authorization:'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6Ijg1M2ZhODFiNGU1ZjE3MGI0YmVhZGNjMDU3YmM1OTM2YzhhMzk2M2VhNmY1NGM1YTljYjAwNjUxNGZjYmJhNTQiLCJpYXQiOjE0ODQxN zA2ODB9.FSADbMng2-yI2bFSr2Cx2P__hpXiLFJPH033RuhRwAg' image@./test/data/pic.jpg
  ```
  Example Response:
  ```
@@ -181,6 +194,7 @@ X-Powered-By: Express
 
 **User signin**
 GET /api/signin
+
 Example: https://wheatlessinv2.herokuapp.com/api/signin
 
 Required Data: Authorization header, Provide username and password as JSON
@@ -244,7 +258,9 @@ X-Powered-By: Express
 ___
 ### PUT
 **User Update**
+
 GET /api/signin/update
+
 Example: https://wheatlessinv2.herokuapp.com/api/signin/update
 
 Required Data: Authorization header, Provide username and password as JSON
@@ -278,6 +294,7 @@ X-Powered-By: Express
 ```
 ___
 **Biz update**
+
 Example:https://wheatlessinv2.herokuapp.com/api/biz/5877224205b9ce21a84d9d40
 
 Required Data:
@@ -316,6 +333,7 @@ X-Powered-By: Express
 ___
 ### DELETE
 **Biz delete**
+
 Example:https://wheatlessinv2.herokuapp.com/api/biz/58768d9db3bd9616805d8d0e
 
 Required Data:
@@ -354,7 +372,7 @@ it will be returned in JSON format once a user's token is verified. The response
 
  Example request:
  ```
- http DELETE localhost:8000/api/pic/587735a19 d3cc020189ffd07 Authorization:'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVC J9.eyJ0b2tlbiI6IjdmNTJiZjU4OGQ5YjA4NTdkYWE5MmMzMDdhNTQxYmUxNGJmYjE3OGU2M 2M2ZDQ2ODFkMWQ5ODk0MGI3NDQxZjAiLCJpYXQiOjE0ODQyMDIzMTZ9.lxIQxUk3xjzW89Zg Kei546nwbrVKmA8ZedBSXBNRo4g'
+ http DELETE wheatlessinv2.herokuapp.com/api/pic/587735a19 d3cc020189ffd07 Authorization:'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVC J9.eyJ0b2tlbiI6IjdmNTJiZjU4OGQ5YjA4NTdkYWE5MmMzMDdhNTQxYmUxNGJmYjE3OGU2M 2M2ZDQ2ODFkMWQ5ODk0MGI3NDQxZjAiLCJpYXQiOjE0ODQyMDIzMTZ9.lxIQxUk3xjzW89Zg Kei546nwbrVKmA8ZedBSXBNRo4g'
  ```
  Example response:
  ```
