@@ -79,137 +79,153 @@ describe('Biz-router-test', function(){
     .then( () => done())
     .catch(done);
   });
-  describe('Biz:POST route', () => {
-    debug('Biz: POST route');
-    it('POST: test for invalid path', done => {
-      debug('valid body with invalid request');
-      request.post(`${url}/abcd`)
-      .send({
-        name: 'testBiz',
-        EIN: '98-7654321',
-      })
-      .end( (err, res) => {
-        expect(res.status).to.equal(404);
-        done();
+  describe('Biz:POST :/api/biz', () => {
+    describe('invalid path', () => {
+      it('should expect 404 status', done => {
+        request.post(`${url}/abcd`)
+        .send({
+          name: 'testBiz',
+          EIN: '98-7654321',
+        })
+        .end( (err, res) => {
+          expect(res.status).to.equal(404);
+          done();
+        });
       });
     });
-    it('POST: test for missing token', done => {
-      debug('valid body with invalid request');
-      request.post(`${url}`)
-      .send({
-        name: 'testBiz',
-        EIN: '98-7654321',
-      })
-      .end( (err, res) => {
-        expect(res.status).to.equal(401);
-        expect(res.text).to.equal('UnauthorizedError');
-        done();
+    describe('missing token', () => {
+      it('should expect 401 status', done => {
+        request.post(`${url}`)
+        .send({
+          name: 'testBiz',
+          EIN: '98-7654321',
+        })
+        .end( (err, res) => {
+          expect(res.status).to.equal(401);
+          expect(res.text).to.equal('UnauthorizedError');
+          done();
+        });
       });
     });
-    it('POST: test for invalid token', done => {
-      debug('valid body with invalid request');
-      request.post(`${url}`)
-      .set({Authorization: `Bearer ${this.newToken}`})
-      .send({
-        name: 'testBiz',
-        EIN: '98-7654321',
-      })
-      .end( (err, res) => {
-        expect(res.status).to.equal(400);
-        done();
+    describe('invalid token', () => {
+      it('expect 400 status', done => {
+        request.post(`${url}`)
+        .set({Authorization: `Bearer ${this.newToken}`})
+        .send({
+          name: 'testBiz',
+          EIN: '98-7654321',
+        })
+        .end( (err, res) => {
+          expect(res.status).to.equal(400);
+          done();
+        });
       });
     });
-    it('POST: missing body', done => {
-      debug('missing body with valid request');
-      request.post(`${url}`)
-      .set({Authorization: `Bearer ${this.token}`})
-      .end( (err, res) => {
-        expect(res.text).to.equal('BadRequestError');
-        expect(res.status).to.equal(400);
-        done();
+    describe('missing body', () => {
+      it('should 400 status', done => {
+        request.post(`${url}`)
+        .set({Authorization: `Bearer ${this.token}`})
+        .end( (err, res) => {
+          expect(res.text).to.equal('BadRequestError');
+          expect(res.status).to.equal(400);
+          done();
+        });
       });
     });
-    it('should POST biz', done => {
-      debug('valid body with valid request');
-      request.post(`${url}`)
-      .set({Authorization: `Bearer ${this.token}`})
-      .send({
-        name: 'testBiz',
-        EIN: '98-7654321',
-      })
-      .end( (err, res) => {
-        if(err) return done(err);
-        expect(res.body.name).to.equal( 'testBiz');
-        expect(res.body.EIN).to.equal('98-7654321');
-        expect(res.body).to.have.property('userId');
-        expect(res.body.userId).to.equal(`${this.userId}`);
-        expect(res.status).to.equal(200);
-        done();
+    describe('valid post', () => {
+      it('should status 200', done => {
+        request.post(`${url}`)
+        .set({Authorization: `Bearer ${this.token}`})
+        .send({
+          name: 'testBiz',
+          EIN: '98-7654321',
+        })
+        .end( (err, res) => {
+          if(err) return done(err);
+          expect(res.body.name).to.equal( 'testBiz');
+          expect(res.body.EIN).to.equal('98-7654321');
+          expect(res.body).to.have.property('userId');
+          expect(res.body.userId).to.equal(`${this.userId}`);
+          expect(res.status).to.equal(200);
+          done();
+        });
       });
     });
   });
   describe('GET: api/biz/:id', () => {
-    debug('GET: Route test');
-    it('GET: should check for route invalid path', done => {
-      request.get(`http://localhost:${process.env.PORT}/api/bizzz`)
-      .end( (err, res) => {
-        expect(res.status).to.equal(404);
-        done();
+    describe(' invalid path', () => {
+      it('expect error 404', done => {
+        request.get(`http://localhost:${process.env.PORT}/api/bizzz`)
+        .end( (err, res) => {
+          expect(res.status).to.equal(404);
+          done();
+        });
       });
     });
-    it('GET: valid request with invalid id', done => {
-      request.get(`${url}/'58756$$$38b87e0ef8482***'`)
-      .end( (err, res) => {
-        expect(res.status).to.equal(404);
-        done();
+    describe('invalid id', () => {
+      it('expect res status 404', done => {
+        request.get(`${url}/'58756$$$38b87e0ef8482***'`)
+        .end( (err, res) => {
+          expect(res.status).to.equal(404);
+          done();
+        });
       });
     });
-    it('GET: valid request with valid id', done => {
-      request.get(`${url}/${this.biz._id}`)
-      .end( (err, res) => {
-        if(err) return done(err);
-        expect(res.status).to.equal(200);
-        expect(res.body.name).to.equal(testbiz.name);
-        expect(res.body._id).to.equal(`${this.biz._id}`);
-        expect(res.body.EIN).to.equal(testbiz.EIN);
-        done();
+    describe('valid id', () => {
+      it('expect res status 200', done => {
+        request.get(`${url}/${this.biz._id}`)
+        .end( (err, res) => {
+          if(err) return done(err);
+          expect(res.status).to.equal(200);
+          expect(res.body.name).to.equal(testbiz.name);
+          expect(res.body._id).to.equal(`${this.biz._id}`);
+          expect(res.body.EIN).to.equal(testbiz.EIN);
+          done();
+        });
       });
     });
   });
   describe('DELETE: api/biz/:id', () => {
-    debug('DELETE: Route test');
-    it('DELETE: should check for route invalid path', done => {
-      request.delete(`http://localhost:${process.env.PORT}/put/bizzz`)
-      .set({Authorization: `Bearer ${this.token}`})
-      .end( (err, res) => {
-        expect(res.status).to.equal(404);
-        done();
+    describe('invalid path', () => {
+      it('res status 404', done => {
+        request.delete(`http://localhost:${process.env.PORT}/put/bizzz`)
+        .set({Authorization: `Bearer ${this.token}`})
+        .end( (err, res) => {
+          expect(res.status).to.equal(404);
+          done();
+        });
       });
     });
-    it('DELETE: test for invalid token', done => {
-      debug('valid body with invalid request');
-      request.delete(`${url}/${this.biz._id}`)
-      .set({Authorization: `Bearer ${this.token}`})
-      .end( (err, res) => {
-        expect(res.status).to.equal(204);
-        done();
+    describe('invalid token', () => {
+      it('res status 400', done => {
+        debug('valid body with invalid request');
+        request.delete(`${url}/${this.biz._id}`)
+        .set({Authorization: `Bearer ${this.newToken}`})
+        .end( (err, res) => {
+          expect(res.status).to.equal(400);
+          done();
+        });
       });
     });
-    it('DELETE: valid request with invalid id', done => {
-      request.delete(`${url}/58756$$$38b87e0ef8482***`)
-      .set({Authorization: `Bearer ${this.token}`})
-      .end( (err, res) => {
-        expect(res.status).to.equal(404);
-        done();
+    describe('invalid id', () => {
+      it('expect res status 404 ', done => {
+        request.delete(`${url}/58756$$$38b87e0ef8482***`)
+        .set({Authorization: `Bearer ${this.token}`})
+        .end( (err, res) => {
+          expect(res.status).to.equal(404);
+          done();
+        });
       });
     });
-    it('DELETE: valid request with valid id', done => {
-      request.delete(`${url}/${this.biz._id}`)
-      .set({Authorization: `Bearer ${this.token}`})
-      .end( (err, res) => {
-        if(err) return done(err);
-        expect(res.status).to.equal(204);
-        done();
+    describe('valid id', () => {
+      it('expect res status 204', done => {
+        request.delete(`${url}/${this.biz._id}`)
+        .set({Authorization: `Bearer ${this.token}`})
+        .end( (err, res) => {
+          if(err) return done(err);
+          expect(res.status).to.equal(204);
+          done();
+        });
       });
     });
   });
