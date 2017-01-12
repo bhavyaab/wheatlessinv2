@@ -34,6 +34,7 @@ bizRouter.put('/api/biz/:id', bearerAuth, jsonParser,function(req, res, next) {
 
   Biz.findById(req.params.id)
   .then( biz => {
+    if(`${req.user._id}` != `${biz.userId}`) return Promise.reject(createError(403, 'access denied'));
     for(var prop in biz){
       if(req.body[prop]) biz[prop] = req.body[prop];
     }

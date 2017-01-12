@@ -141,4 +141,70 @@ describe('Auth Routes', function() {
       });
     }); //unknown username
   }); // GET /api/signin
+
+  describe('PUT /api/signin', function(){
+    before( done => {
+      var user = new User(exampleUser);
+      user.generatePasswordHash(exampleUser.password)
+      .then( () => user.save())
+      .then( () => user.generateToken())
+      .then( token => {
+        this.token = token;
+        done();
+      })
+      .catch(done);
+    });
+
+    after( done => {
+      User.remove({})
+      .then( () => done())
+      .catch(done);
+    });
+    describe('with valid body and invalid path', () => {
+      it('should expect res status 404', done => {
+        request.put(`${url}/api/signin/updatenot`)
+        .set({Authorization: `Bearer ${this.token}`})
+        .send({
+          email: 'update@example.com',
+          password: 'updatePassword'
+        })
+        .end( (err, res) => {
+          expect(res.status).to.equal(404);
+          done();
+        });
+      });
+    });
+    describe('with valid body and valid path invalid token', () => {
+      it('should expect res status 401', done => {
+        request.put(`${url}/api/signin`)
+        .set({Authorization: 'Bearer 1234567890123456789'})
+        .send({
+          email: 'update@example.com',
+          password: 'updatePassword'
+        })
+        .end( (err, res) => {
+          expect(res.status).to.equal(401);
+          done();
+        });
+      });
+    });
+    describe('with valid body and valid path', () => {
+      it('should expect res status 200', done => {
+        request.put(`${url}/api/signin`)
+        .set({Authorization: `Bearer ${this.token}`})
+        .send({
+          email: 'update@example.com',
+          password: 'updatePassword'
+        })
+        .end( (err, res) => {
+          if(err) return done(err);
+          expect(res.status).to.equal(200);
+          expect(res.body.email).to.equal('update@example.com');
+          expect(res.body.password).to.equal('updatePassword');
+          expect(res.body.username).to.equal(exampleUser.username);
+          done();
+        });
+      });
+    });
+  });
 });

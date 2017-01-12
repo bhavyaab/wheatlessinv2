@@ -29,7 +29,6 @@ const testbiz = {
 const url = `http://localhost:${process.env.PORT}/api/biz`;
 
 describe('Biz-router-test', function(){
-  debug('bizRouter');
   before( done => {
     var user = new User(testUser);
     user.generatePasswordHash(testUser.password)
@@ -89,6 +88,7 @@ describe('Biz-router-test', function(){
         })
         .end( (err, res) => {
           expect(res.status).to.equal(404);
+          expect(res.text).to.equal('Cannot POST /api/biz/abcd\n');
           done();
         });
       });
@@ -153,7 +153,7 @@ describe('Biz-router-test', function(){
     });
   });
   describe('GET: api/biz/:id', () => {
-    describe(' invalid path', () => {
+    describe('invalid path', () => {
       it('expect error 404', done => {
         request.get(`http://localhost:${process.env.PORT}/api/bizzz`)
         .end( (err, res) => {
@@ -185,6 +185,55 @@ describe('Biz-router-test', function(){
       });
     });
   });
+  describe('PUT: api/biz/:id', () => {
+    describe(' invalid path', () => {
+      it('expect error 404', done => {
+        request.put(`http://localhost:${process.env.PORT}/api/bizzz`)
+        .set({authorization: `Bearer ${this.token}`})
+        .end( (err, res) => {
+          expect(res.status).to.equal(404);
+          expect(res.text).to.equal('Cannot PUT /api/bizzz\n');
+          done();
+        });
+      });
+    });
+    describe('invalid id', () => {
+      it('expect res status 404', done => {
+        request.put(`${url}/'58756$$$38b87e0ef8482***'`)
+        .set({authorization: `Bearer ${this.token}`})
+        .end( (err, res) => {
+          expect(res.status).to.equal(404);
+          expect(res.text).to.equal('NotFoundError');
+          done();
+        });
+      });
+    });
+    describe('valid id invalid token', () => {
+      it('expect res status 400', done => {
+        request.put(`${url}/${this.biz._id}`)
+        .set({authorization: `Bearer ${this.newToken}`})
+        .end( (err, res) => {
+          expect(res.status).to.equal(400);
+          expect(res.text).to.equal('BadRequestError');
+          done();
+        });
+      });
+    });
+    describe('valid id', () => {
+      it('expect res status 200', done => {
+        request.put(`${url}/${this.biz._id}`)
+        .set({authorization: `Bearer ${this.token}`})
+        .end( (err, res) => {
+          if(err) return done(err);
+          expect(res.status).to.equal(200);
+          expect(res.body.name).to.equal(testbiz.name);
+          expect(res.body._id).to.equal(`${this.biz._id}`);
+          expect(res.body.EIN).to.equal(testbiz.EIN);
+          done();
+        });
+      });
+    });
+  });
   describe('DELETE: api/biz/:id', () => {
     describe('invalid path', () => {
       it('res status 404', done => {
@@ -192,6 +241,7 @@ describe('Biz-router-test', function(){
         .set({Authorization: `Bearer ${this.token}`})
         .end( (err, res) => {
           expect(res.status).to.equal(404);
+          expect(res.text).to.equal('Cannot DELETE /put/bizzz\n');
           done();
         });
       });
@@ -203,6 +253,7 @@ describe('Biz-router-test', function(){
         .set({Authorization: `Bearer ${this.newToken}`})
         .end( (err, res) => {
           expect(res.status).to.equal(400);
+          expect(res.text).to.equal('BadRequestError');
           done();
         });
       });
@@ -213,6 +264,7 @@ describe('Biz-router-test', function(){
         .set({Authorization: `Bearer ${this.token}`})
         .end( (err, res) => {
           expect(res.status).to.equal(404);
+          expect(res.text).to.equal('NotFoundError');
           done();
         });
       });
