@@ -16,7 +16,7 @@
 ### Architecture
 This API is structured on a Middleware(Authentication and Error catching), Model(Schema), Router pattern. The base technologies are node.js server, node.http module, express middleware, AWS and a mongo database. This architecture is currently deployed in a two tier environment(staging, production), leveraging the heroku platform.
 
-  **Middleware**:
+**Middleware**:
  - The express router middleware provides the base routing capability.
  - A custom handle-errors module implements and extends the http-errors npm middleware package.
  - An auth middleware module leverages two npm modules (bcryptjs, jsonwebtoken) and the node.crypto module to provide user sign-up and user sign-in functionality as well as business for authentication/authorization and post the menu.
@@ -262,10 +262,10 @@ X-Powered-By: Express
 ```
 ****
 # Testing
-###Testing Framework
+### Testing Framework
 mocha test runner  
 chai (expect)  
 bluebird promise library
-###Continuous Integration
+### Continuous Integration
 travis-ci
-###Coveralls
+### Coveralls

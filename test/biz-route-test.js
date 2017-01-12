@@ -93,8 +93,8 @@ describe('Biz-router-test', function(){
         });
       });
     });
-    describe('Biz:POST :/api/biz', () => {
-      it('should expect 401 status to test for missing token', done => {
+    describe('missing token', () => {
+      it('should expect 401 status', done => {
         request.post(`${url}`)
         .send({
           name: 'testBiz',
@@ -107,8 +107,8 @@ describe('Biz-router-test', function(){
         });
       });
     });
-    describe('Biz:POST :/api/biz', () => {
-      it('should expect 400 error to test for invalid token', done => {
+    describe('invalid token', () => {
+      it('expect 400 status', done => {
         request.post(`${url}`)
         .set({Authorization: `Bearer ${this.newToken}`})
         .send({
@@ -121,8 +121,8 @@ describe('Biz-router-test', function(){
         });
       });
     });
-    describe('Biz:POST :/api/biz', () => {
-      it('should expect for 400 status for missing body', done => {
+    describe('missing body', () => {
+      it('should 400 status', done => {
         request.post(`${url}`)
         .set({Authorization: `Bearer ${this.token}`})
         .end( (err, res) => {
@@ -132,8 +132,8 @@ describe('Biz-router-test', function(){
         });
       });
     });
-    describe('Biz:POST :/api/biz', () => {
-      it('should expect status 200 for valid body with valid post', done => {
+    describe('valid post', () => {
+      it('should status 200', done => {
         request.post(`${url}`)
         .set({Authorization: `Bearer ${this.token}`})
         .send({
@@ -153,8 +153,8 @@ describe('Biz-router-test', function(){
     });
   });
   describe('GET: api/biz/:id', () => {
-    describe('Biz:GET :/api/biz/:id', () => {
-      it('GET: should check for route invalid path', done => {
+    describe(' invalid path', () => {
+      it('expect error 404', done => {
         request.get(`http://localhost:${process.env.PORT}/api/bizzz`)
         .end( (err, res) => {
           expect(res.status).to.equal(404);
@@ -162,8 +162,8 @@ describe('Biz-router-test', function(){
         });
       });
     });
-    describe('Biz:GET :/api/biz/:id', () => {
-      it('GET: valid request with invalid id', done => {
+    describe('invalid id', () => {
+      it('expect res status 404', done => {
         request.get(`${url}/'58756$$$38b87e0ef8482***'`)
         .end( (err, res) => {
           expect(res.status).to.equal(404);
@@ -171,8 +171,8 @@ describe('Biz-router-test', function(){
         });
       });
     });
-    describe('Biz:GET :/api/biz/:id', () => {
-      it('GET: valid request with valid id', done => {
+    describe('valid id', () => {
+      it('expect res status 200', done => {
         request.get(`${url}/${this.biz._id}`)
         .end( (err, res) => {
           if(err) return done(err);
@@ -186,8 +186,8 @@ describe('Biz-router-test', function(){
     });
   });
   describe('DELETE: api/biz/:id', () => {
-    describe('DELETE: api/biz/:id', () => {
-      it('DELETE: should check for route invalid path', done => {
+    describe('invalid path', () => {
+      it('res status 404', done => {
         request.delete(`http://localhost:${process.env.PORT}/put/bizzz`)
         .set({Authorization: `Bearer ${this.token}`})
         .end( (err, res) => {
@@ -196,8 +196,8 @@ describe('Biz-router-test', function(){
         });
       });
     });
-    describe('DELETE: api/biz/:id', () => {
-      it('DELETE: test for invalid token', done => {
+    describe('invalid token', () => {
+      it('res status 400', done => {
         debug('valid body with invalid request');
         request.delete(`${url}/${this.biz._id}`)
         .set({Authorization: `Bearer ${this.newToken}`})
@@ -207,8 +207,8 @@ describe('Biz-router-test', function(){
         });
       });
     });
-    describe('DELETE: api/biz/:id', () => {
-      it('DELETE: valid request with invalid id', done => {
+    describe('invalid id', () => {
+      it('expect res status 404 ', done => {
         request.delete(`${url}/58756$$$38b87e0ef8482***`)
         .set({Authorization: `Bearer ${this.token}`})
         .end( (err, res) => {
@@ -217,8 +217,8 @@ describe('Biz-router-test', function(){
         });
       });
     });
-    describe('DELETE: api/biz/:id', () => {
-      it('DELETE: valid request with valid id', done => {
+    describe('valid id', () => {
+      it('expect res status 204', done => {
         request.delete(`${url}/${this.biz._id}`)
         .set({Authorization: `Bearer ${this.token}`})
         .end( (err, res) => {
