@@ -361,7 +361,9 @@ X-Powered-By: Express
 ```
 ___
 **Pic Delete**
+
 Example:https://wheatlessinv2.herokuapp.com/api/pic/:picId
+
 Required Data:
 picture id,
 This route will authenticate the user before deletion.
