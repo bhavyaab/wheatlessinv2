@@ -29,6 +29,10 @@ app.use(bizRouter);
 app.use(picRouter);
 app.use(errors);
 
+app.get('/', (req, res) => {
+  res.send('Welcome to Wheatless In...');
+});
+
 const server = module.exports = app.listen(PORT, () => {
   debug(`server up: ${PORT}`);
 });
