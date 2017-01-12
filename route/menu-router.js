@@ -11,14 +11,14 @@ const bearerAuth = require('../lib/bearer-auth-middleware.js');
 
 const menuRouter = module.exports = Router();
 
-menuRouter.post('/api/biz/:bizId/menu', jsonParser, bearerAuth, function(req, res, next) {
+menuRouter.post('/api/biz/:bizId/menu', bearerAuth, jsonParser, function(req, res, next) {
   debug('POST /api/biz/:bizId/menu');
 
   let tempBiz;
   let tempMenu;
   Biz.findById(req.params.bizId)
   .then( biz => {
-    if (!biz) return next(createError(400, 'Business Does Not Exist'));
+    if (!biz) return createError(400, 'Business Does Not Exist');
     if (biz.userId.toString() !== req.user._id.toString()) {
       return Promise.reject(next(createError(400, 'Invalid User')));
     }
@@ -28,11 +28,26 @@ menuRouter.post('/api/biz/:bizId/menu', jsonParser, bearerAuth, function(req, re
   })
   .then( menu => {
     tempMenu = menu;
-    tempBiz.menuId = menu._id;
+    tempBiz.menu = menu._id;
     return tempBiz.save();
   })
   .then( () => {
     res.json(tempMenu);
   })
-  .catch( err => next(err));
+  .catch(next);
+});
+
+menuRouter.get('/api/biz/:bizId/menu', bearerAuth, function(req, res, next) {
+  debug('GET /api/biz/:bizId/menu');
+
+  Biz.findById(req.params.bizId)
+  .then( foundBiz => {
+    if(!foundBiz) return new Error();
+    debug('found biz:', foundBiz);
+    Menu.findById(foundBiz.menu)
+    .then( foundMenu => res.json(foundMenu))
+    .catch(err => next(createError(404, `could not find menu: ${err.message}`)));
+  })
+  .catch(err => next(createError(404, `could not find business: ${err.message}`)));
+
 });
