@@ -28,8 +28,7 @@ menuRouter.post('/api/biz/:bizId/menu', bearerAuth, jsonParser, function(req, re
   })
   .then( menu => {
     tempMenu = menu;
-    tempBiz.menu = menu._id;
-    return tempBiz.save();
+    return tempBiz.update({menu: menu._id});
   })
   .then( () => {
     res.json(tempMenu);
