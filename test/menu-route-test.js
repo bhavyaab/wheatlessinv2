@@ -136,11 +136,9 @@ describe('Menu routes', () => {
       })
       .then( savedMenu => {
         this.tempMenu = savedMenu;
-        Biz.update({ _id: this.tempBiz._id}, { menu: this.tempMenu._id }, (err) => {
-          if (err) return(err);
-          done();
-        });
+        return this.tempBiz.update({ menu: this.tempMenu._id });
       })
+      .then( () => done())
       .catch(done);
 
     });
