@@ -45,7 +45,7 @@ function s3uploadProm(params) {
 const picRouter = module.exports = Router();
 
 picRouter.post('/api/menu/:menuId/pic', bearerAuth, upload.single('image'), function(req, res, next) {
-  debug('POST /api/menu/:menuId/pic');
+  debug('POST /api/menu/:menuId/pic', req.params.menuId);
 
   if (!req.file) {
     return next(createError(400, 'file not found'));
@@ -64,12 +64,12 @@ picRouter.post('/api/menu/:menuId/pic', bearerAuth, upload.single('image'), func
     Body: fs.createReadStream(req.file.path)
   };
 
-
   let tempMenu;
   let tempPic;
   Menu.findById(req.params.menuId)
-  .catch( err => next(createError(404, err.message)))
+  .catch( () => next(createError(404, `cannot find menu: ${req.params.menuId}`)))
   .then( foundMenu => {
+    if(!foundMenu) return Promise.reject(createError(404, 'menu not found'));
     tempMenu = foundMenu;
     return s3uploadProm(params);
   })
