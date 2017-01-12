@@ -101,6 +101,7 @@ picRouter.post('/api/menu/:menuId/pic', bearerAuth, upload.single('image'), func
 picRouter.delete('/api/pic/:picId', bearerAuth, jsonParser, function(req, res, next){
   debug('DELETE api/pic/:picId');
 
+  if(!req.user) return Promise.reject(createError(404, 'not found'));
   Pic.findById(req.params.picId)
   .then( pic => {
     if(`${req.user._id}` != `${pic.userId}`) return Promise.reject(createError(403, 'access denied'));
@@ -117,5 +118,5 @@ picRouter.delete('/api/pic/:picId', bearerAuth, jsonParser, function(req, res, n
       return res.json(data);
     });
   })
-  .catch(next);
+  .catch(err => next(createError(404, err.message)));
 });
