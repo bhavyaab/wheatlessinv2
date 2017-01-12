@@ -59,6 +59,32 @@ describe('Pic Routes', function() {
   });
 
   describe('POST /api/menu/:menuId/pic', () => {
+    describe('with a menuId that does not exist', () => {
+      it('should return a 404', done => {
+        request.post(`${url}/api/menu/5876cb5ea93f1ce1001bb490/pic`)
+        // request.post(`${url}/api/menu/not_a_valid_id/pic`)
+        .set({ Authorization: `Bearer ${this.user.token}` })
+        .attach('image', `${__dirname}/data/pic.jpg`)
+        .end( (err, res) => {
+          expect(res.status).to.equal(404);
+          done();
+        });
+      });
+    }); //menuId does not exist
+
+    describe('with a menuId that is bogus', () => {
+      it('should return a 404', done => {
+        request.post(`${url}/api/menu/bogus/pic`)
+        // request.post(`${url}/api/menu/not_a_valid_id/pic`)
+        .set({ Authorization: `Bearer ${this.user.token}` })
+        .attach('image', `${__dirname}/data/pic.jpg`)
+        .end( (err, res) => {
+          expect(res.status).to.equal(404);
+          done();
+        });
+      });
+    }); //bogus menuId
+
     describe('with a valid menuId and pic', () => {
       it('should return a pic object', done => {
         request.post(`${url}/api/menu/${this.menu._id}/pic`)
