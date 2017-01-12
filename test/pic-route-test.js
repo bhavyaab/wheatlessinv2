@@ -120,7 +120,18 @@ describe('Pic Routes', function() {
        });
       });
     });
-
+    describe('with invalid user by invalid token', () => {
+      it('should return res status 404', done => {
+        request.delete(`${url}/api/pic/${this.picId}`)
+       .set({
+         Authorization: 'Bearer 123456787900piwuewhjdsihsiuadhfiuahfausnfsdufhiusawueowiweiwo'
+       })
+       .end( (err, res) => {
+         expect(res.status).to.equal(401);
+         done();
+       });
+      });
+    });
     describe('with valid picId and valid token', () => {
       it('should return res status 200', done => {
         request.delete(`${url}/api/pic/${this.picId}`)
