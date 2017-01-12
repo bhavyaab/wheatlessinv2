@@ -1,5 +1,6 @@
 'use strict';
 
+const debug = require('debug')('wheatlessinv2:menu-route-test');
 const expect = require('chai').expect;
 const request = require('superagent');
 const mongoose = require('mongoose');
@@ -64,7 +65,7 @@ describe('Menu routes', () => {
 
     describe('with valid auth and valid menu - no isCompletelyGlutenFree flag', () => {
       it('should return a new menu', done => {
-        request.post(`${url}/api/biz/${this.tempBiz1._id.toString()}/menu`)
+        request.post(`${url}/api/biz/${this.tempBiz1._id}/menu`)
         .set({authorization: `Bearer ${this.tempUser1.token}`})
         .end( (err, res) => {
           if(err) done(err);
@@ -77,9 +78,8 @@ describe('Menu routes', () => {
 
     describe('with valid auth and valid menu - iCGF flag set', () => {
       it('should return a new menu', done => {
-        request.post(`${url}/api/biz/${this.tempBiz1._id.toString()}/menu`)
+        request.post(`${url}/api/biz/${this.tempBiz1._id}/menu`)
         .send(exampleMenu)
-        // ('isCompletelyGlutenFree', exampleMenu.isCompletelyGlutenFree)
         .set({authorization: `Bearer ${this.tempUser1.token}`})
         .end( (err, res) => {
           if(err) done(err);
@@ -93,9 +93,8 @@ describe('Menu routes', () => {
 
     describe('with INVALID auth and valid menu', () => {
       it('should return a 401', done => {
-        request.post(`${url}/api/biz/${this.tempBiz1._id.toString()}/menu`)
+        request.post(`${url}/api/biz/${this.tempBiz1._id}/menu`)
         .send(exampleMenu)
-        // ('isCompletelyGlutenFree', exampleMenu.isCompletelyGlutenFree)
         .set({authorization: 'Bearer badtoken123'})
         .end( (err, res) => {
           expect(err).to.be.an('error');
@@ -107,9 +106,8 @@ describe('Menu routes', () => {
 
     describe('with valid auth and non-owner business ID in URL', () => {
       it('should return a 400', done => {
-        request.post(`${url}/api/biz/${this.tempBiz2._id.toString()}/menu`)
+        request.post(`${url}/api/biz/${this.tempBiz2._id}/menu`)
         .send(exampleMenu)
-        // ('isCompletelyGlutenFree', exampleMenu.isCompletelyGlutenFree)
         .set({authorization: `Bearer ${this.tempUser1.token}`})
         .end( (err, res) => {
           //expect(err).to.be.an('error');
@@ -120,5 +118,51 @@ describe('Menu routes', () => {
     }); //valid auth, bad biz id
 
   }); // POST /api/menu
+
+  describe('GET /api/biz/:bizId/menu', () => {
+
+    before( done => {
+
+      mockUser()
+      .then( newMockedUser => {
+        this.tempUser = newMockedUser;
+        return mockBiz(newMockedUser);
+      })
+      .then( newMockedBiz => {
+        this.tempBiz = newMockedBiz;
+        let thisBizsNewMenu = exampleMenu;
+        thisBizsNewMenu.bizId = newMockedBiz._id;
+        return new Menu(thisBizsNewMenu).save();
+      })
+      .then( savedMenu => {
+        this.tempMenu = savedMenu;
+        Biz.update({ _id: this.tempBiz._id}, { $set: { menu: this.tempMenu._id }}, (err) => {
+          if (err) return(err);
+          done();
+        });
+      })
+      .catch(done);
+
+    });
+
+    describe('with valid authentication and valid menu ID', () => {
+      it('returns a menu', done => {
+        request.get(`${url}/api/biz/${this.tempBiz._id}/menu`)
+        .set({authorization: `Bearer ${this.tempUser.token}`})
+        .end( (err, res) => {
+          debug('res.body:', res.body);
+          expect(res.status).to.equal(200);
+          done();
+        });
+      });
+    }); //valid auth, good menu id
+
+
+    after( () => {
+      debug('tempBiz', this.tempBiz);
+      debug('tempMenu', this.tempMenu);
+    });
+
+  });
 
 });

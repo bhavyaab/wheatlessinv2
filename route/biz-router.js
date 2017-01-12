@@ -36,7 +36,7 @@ bizRouter.delete('/api/biz/:id', bearerAuth, function(req, res, next) {
   Biz.findById(req.params.id)
   .then( biz => {
     if(biz.userId.toString() !== req.user._id.toString()) {
-      return next(createError(401, 'invalid user, not owner of biz'));
+      return next(createError(403, 'invalid user, not owner of biz'));
     }
     res.status(204).send('OK');
   })
