@@ -2,7 +2,7 @@
 
 ### Overview
  -  This RESTful API provides the necessary back-end infrastructure and functionality to create, read and delete menu for guletin free food.
- - All menu needed to be field out form the resturents or food provider. It is supposed to meanually upload the image of menue.
+ - All menu needed to be field out form the resturents or food provider. It meanually upload the image of menue.
  
  
 ### Current Version (2.0.0)
@@ -25,7 +25,7 @@ This API is structured on a Middleware(Authentication and Error catching), Model
   **Middleware**:
  - The express router middleware provides the base routing capability.
  - A custom handle-errors module implements and extends the http-errors npm middleware package.
- - An auth middleware module leverages two npm modules (bcryptjs, jsonwebtoken) and the node.crypto module to provide user sign-up and user sign-in functionality as well as business for authentication/authorization and post the menu.
+ - An auth middleware module leverages two npm modules (bcryptjs, jsonwebtoken) and the node.crypto module to provide user sign-up and    user sign-in functionality as well as business for authentication/authorization and post the menu.
  - The mongoose npm module is used for interaction with the mongo database.
  - Aws is used to store image data and mongoose stores only referance (image URI), in order to make it more ifficient.
 
@@ -338,7 +338,6 @@ Example:https://wheatlessinv2.herokuapp.com/api/biz/58768d9db3bd9616805d8d0e
 
 Required Data:
 business id
-This route will return all matches that have the provided id.
 
 Authorization Header
 Bearer <response token from signin>
