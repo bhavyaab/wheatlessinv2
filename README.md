@@ -1,18 +1,19 @@
 # wheatlessinv2
 
 ### Overview
- -  This RESTful API provides the necessary back-end infrastructure and functionality to create, read and delete menu for guletin free food.
- - All menu needed to be field out form the resturents or food provider. It meanually upload the image of menue.
+ -  This RESTful API provides the necessary back-end infrastructure and functionality to create, read and delete resources for "Wheatless In," a site that helps people find gluten free food.
+ - Restaurants can register an account and add details about their gluten-free offerings, including a picture of their menu.
 
 
 ### Current Version (2.0.0)
- - The current version of this program is designed to create, read, update, delete and return menus using pics.
-
-
-
+ - The current version of this program is designed to create, read, update, delete these resources:
+ 1. Users
+ 2. Businesses, which are owned by Users
+ 3. Menus for each Business
+ 4. Images of each menu
 
 ### Future Releases
- - V 3.0.0 scheduled for 08/18/2018 will include the following enhancements:
+ - Version 3.0.0 scheduled for 08/18/2018 will include the following enhancements:
  - give user signIn
  - store user guletin status and show their prefferances.  
 
