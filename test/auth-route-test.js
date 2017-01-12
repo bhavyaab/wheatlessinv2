@@ -142,7 +142,7 @@ describe('Auth Routes', function() {
     }); //unknown username
   }); // GET /api/signin
 
-  describe('PUT /api/signin/update', function(){
+  describe('PUT /api/signin', function(){
     before( done => {
       var user = new User(exampleUser);
       user.generatePasswordHash(exampleUser.password)
@@ -176,7 +176,7 @@ describe('Auth Routes', function() {
     });
     describe('with valid body and valid path invalid token', () => {
       it('should expect res status 401', done => {
-        request.put(`${url}/api/signin/update`)
+        request.put(`${url}/api/signin`)
         .set({Authorization: 'Bearer 1234567890123456789'})
         .send({
           email: 'update@example.com',
@@ -190,7 +190,7 @@ describe('Auth Routes', function() {
     });
     describe('with valid body and valid path', () => {
       it('should expect res status 200', done => {
-        request.put(`${url}/api/signin/update`)
+        request.put(`${url}/api/signin`)
         .set({Authorization: `Bearer ${this.token}`})
         .send({
           email: 'update@example.com',

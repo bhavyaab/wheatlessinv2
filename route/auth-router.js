@@ -37,7 +37,7 @@ authRouter.get('/api/signin', basicAuth, function(req, res, next) {
 });
 
 //DONE: User PUT to update
-authRouter.put('/api/signin/update', bearerAuth, jsonParser, function(req, res, next) {
+authRouter.put('/api/signin', bearerAuth, jsonParser, function(req, res, next) {
   debug('GET /api/signin');
 
   User.findById(req.user._id)
