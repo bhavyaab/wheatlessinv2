@@ -136,7 +136,7 @@ describe('Menu routes', () => {
       })
       .then( savedMenu => {
         this.tempMenu = savedMenu;
-        Biz.update({ _id: this.tempBiz._id}, { $set: { menu: this.tempMenu._id }}, (err) => {
+        Biz.update({ _id: this.tempBiz._id}, { menu: this.tempMenu._id }, (err) => {
           if (err) return(err);
           done();
         });
@@ -156,7 +156,6 @@ describe('Menu routes', () => {
         });
       });
     }); //valid auth, good menu id
-
 
     after( () => {
       debug('tempBiz', this.tempBiz);
