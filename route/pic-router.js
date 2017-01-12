@@ -12,7 +12,6 @@ const jsonParser = require('body-parser').json();
 
 const Menu = require('../model/menu.js');
 const Pic  = require('../model/pic.js');
-const User = require('../model/user.js');
 
 AWS.config.setPromisesDependency(require('bluebird'));
 
