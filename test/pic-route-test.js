@@ -94,6 +94,7 @@ describe('Pic Routes', function() {
         .attach('image', `${__dirname}/data/pic.jpg`)
         .end( (err, res) => {
           expect(res.status).to.equal(200);
+          this.picId = res.body._id;
           expect(res.body.userId).to.equal(this.user._id.toString());
           expect(res.body.imageURI).to.equal(awsMocks.uploadMock.Location);
           expect(res.body.objectKey).to.equal(awsMocks.uploadMock.Key);
@@ -105,4 +106,33 @@ describe('Pic Routes', function() {
       });
     }); // valid menuId and pic
   }); // POST /api/menu/:menuId/pic
+
+  describe('DELETE: /api/pic/:picId', () => {
+    describe('with invalid picId and valid token', () => {
+      it('should return res status 404', done => {
+        request.delete(`${url}/api/pic/12345678901234`)
+       .set({
+         Authorization: `Bearer ${this.user.token}`
+       })
+       .end( (err, res) => {
+         expect(res.status).to.equal(500);
+         done();
+       });
+      });
+    });
+
+    describe('with valid picId and valid token', () => {
+      it('should return res status 200', done => {
+        request.delete(`${url}/api/pic/${this.picId}`)
+       .set({
+         Authorization: `Bearer ${this.user.token}`
+       })
+       .end( (err, res) => {
+         if(err) return done(err);
+         expect(res.status).to.equal(200);
+         done();
+       });
+      });
+    });
+  });
 });
