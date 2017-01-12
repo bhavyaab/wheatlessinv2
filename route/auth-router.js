@@ -5,6 +5,7 @@ const debug = require('debug')('wheatlessinv2:auth-router');
 const createError = require('http-errors');
 const Router = require('express').Router;
 const basicAuth = require('../lib/basic-auth-middleware.js');
+const bearerAuth = require('../lib/bearer-auth-middleware.js');
 
 const User = require('../model/user.js');
 
@@ -35,4 +36,16 @@ authRouter.get('/api/signin', basicAuth, function(req, res, next) {
   .catch( err => next(createError(401, err.message)));
 });
 
-//TODO: User PUT to update
+//DONE: User PUT to update
+authRouter.put('/api/signin/update', bearerAuth, jsonParser, function(req, res, next) {
+  debug('GET /api/signin');
+
+  User.findById(req.user._id)
+  .then( user => {
+    for(var prop in user){
+      if(req.body[prop]) user[prop] = req.body[prop];
+    }
+    return res.json(user);
+  })
+  .catch( err => next(createError(404, err.message)));
+});

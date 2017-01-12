@@ -8,9 +8,11 @@ const multer = require('multer');
 const Router = require('express').Router;
 const createError = require('http-errors');
 const debug = require('debug')('wheatlessinv2:pic-router');
+const jsonParser = require('body-parser').json();
 
 const Menu = require('../model/menu.js');
 const Pic  = require('../model/pic.js');
+const User = require('../model/user.js');
 
 AWS.config.setPromisesDependency(require('bluebird'));
 
@@ -94,5 +96,27 @@ picRouter.post('/api/menu/:menuId/pic', bearerAuth, upload.single('image'), func
 
   })
   .then( pic => res.json(pic))
+  .catch(next);
+});
+//pic could be deleted by only authenticated user
+picRouter.delete('/api/pic/:picId', bearerAuth, jsonParser, function(req, res, next){
+  debug('DELETE api/pic/:picId');
+
+  Pic.findById(req.params.picId)
+  .then( pic => {
+    if(`${req.user._id}` != `${pic.userId}`) return Promise.reject(createError(403, 'access denied'));
+    var params = {
+      Bucket: process.env.AWS_BUCKET,
+      Key: pic.objectKey
+    };
+    return params;
+  })
+  .then( params => {
+    let s3 = new AWS.S3();
+    s3.deleteObject(params, function(err, data) {
+      if(err) return Promise.reject(createError(404, 'delete request failed'));
+      return res.json(data);
+    });
+  })
   .catch(next);
 });

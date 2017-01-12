@@ -28,7 +28,19 @@ bizRouter.get('/api/biz/:id', function(req, res, next) {
   .then( biz => res.json(biz))
   .catch( err => next(createError(404, err.message)));
 });
+//only authenticated business can can update a biz.
+bizRouter.put('/api/biz/:id', bearerAuth, jsonParser,function(req, res, next) {
+  debug('GET /api/biz/:id', req.params.id);
 
+  Biz.findById(req.params.id)
+  .then( biz => {
+    for(var prop in biz){
+      if(req.body[prop]) biz[prop] = req.body[prop];
+    }
+    return res.json(biz);
+  })
+  .catch( err => next(createError(404, err.message)));
+});
 //Only owner of biz can delete.
 bizRouter.delete('/api/biz/:id', bearerAuth, function(req, res, next) {
   debug('DELETE /api/biz/:id');
