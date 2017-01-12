@@ -1,7 +1,7 @@
 'use strict';
 
 const express = require('express');
-const cors = require('cors');
+// const cors = require('cors');
 const dotenv = require('dotenv');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
@@ -12,6 +12,7 @@ mongoose.Promise = Promise;
 const menuRouter = require('./route/menu-router.js');
 const authRouter = require('./route/auth-router.js');
 const bizRouter = require('./route/biz-router.js');
+const picRouter = require('./route/pic-router.js');
 const errors = require('./lib/error-middleware.js');
 
 dotenv.load();
@@ -21,12 +22,14 @@ const app = express();
 
 mongoose.connect(process.env.MONGODB_URI);
 
-app.use(cors());
+//NOTE: We don't want CORS
+// app.use(cors());
 app.use(morgan('dev'));
 
 app.use(authRouter);
 app.use(menuRouter);
 app.use(bizRouter);
+app.use(picRouter);
 app.use(errors);
 
 const server = module.exports = app.listen(PORT, () => {
