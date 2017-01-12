@@ -1,7 +1,6 @@
 'use strict';
 
 const express = require('express');
-// const cors = require('cors');
 const dotenv = require('dotenv');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
@@ -22,8 +21,6 @@ const app = express();
 
 mongoose.connect(process.env.MONGODB_URI);
 
-//NOTE: We don't want CORS
-// app.use(cors());
 app.use(morgan('dev'));
 
 app.use(authRouter);

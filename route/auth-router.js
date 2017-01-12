@@ -34,3 +34,5 @@ authRouter.get('/api/signin', basicAuth, function(req, res, next) {
   .then( token => res.send(token))
   .catch( err => next(createError(401, err.message)));
 });
+
+//TODO: User PUT to update
