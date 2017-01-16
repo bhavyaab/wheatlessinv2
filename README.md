@@ -1,9 +1,8 @@
 # wheatlessinv2
 
 ### Overview
- -  This RESTful API provides the necessary back-end infrastructure and functionality to create, read and delete resources for "Wheatless In," a site that helps people find gluten free food.
- - Restaurants can register an account and add details about their gluten-free offerings, including a picture of their menu.
-
+ -  Wheatlessin is a RESTful API that provides back-end infrastructure and functionality to create, read and delete resources. The end product will be a web and mobile site that helps people discover gluten free food.
+ - Restaurant owners can register an account and add details about their gluten-free offerings, including a picture of their menu.
 
 ### Current Version (2.0.0)
  - The current version of this program is designed to create, read, update, delete these resources:
@@ -13,33 +12,34 @@
  4. Images of each menu
 
 ### Future Releases
- - Version 3.0.0 scheduled for 08/18/2018 will include the following enhancements:
+ - Version 2.5.0 has a scheduled release on February 2017 which will include the following enhancements:
+ - complete front end makeover
  - give user signIn
- - store user guletin status and show their prefferances.  
+ - store user's gluten free status  
 
 
 ### Ways to contribute
- - Reporting Bugs: Open up an issue through this git repository and select "bug" as the label
+ - Report Bugs: Open up an issue through this git repository and select "bug" as the label
  - Recommending Enhancements: Open up an issue through this git repository and select "enhancement" as the label
- - Issues are reviewed weekly
+ - Issues will be reviewed weekly
 
 
 ### Architecture
-This API is structured on a Middleware(Authentication and Error catching), Model(Schema), Router pattern. The base technologies are node.js server, node.http module, express middleware, AWS and a mongo database. This architecture is currently deployed in a two tier environment(staging, production), leveraging the heroku platform.
+This API is structured on a Middleware (Authentication and Error catching), Model (Schema), and Router pattern. The base technologies are running on a node.js server, node.http module, express middleware, AWS and a mongo database. This architecture is currently deployed in a two tier environment (staging & production), leveraging the heroku platform.
 
   **Middleware**:
- - The express router middleware provides the base routing capability.
+ - The express router middleware provides base routing capability.
  - A custom handle-errors module implements and extends the http-errors npm middleware package.
- - An auth middleware module leverages two npm modules (bcryptjs, jsonwebtoken) and the node.crypto module to provide user sign-up and    user sign-in functionality as well as business for authentication/authorization and post the menu.
+ - An auth middleware module leverages two npm modules (bcryptjs, jsonwebtoken) and node.crypto module to provide user sign-up and user sign-in functionality, this includes business authentication/authorization which allows business user's to post their menus.
  - The mongoose npm module is used for interaction with the mongo database.
- - Aws is used to store image data and mongoose stores only referance (image URI), in order to make it more ifficient.
+ - AWS is used to store image data and mongoose stores only the reference object (image URI) for server efficiency.
 
 **Model**:
- - Each resources (user, biz, pic, menu) are mongoose Schema and have dedicated router files located in the route folder. In addition to providing an interface to the pubic user, these files provides modular structure.
+ - Wheatlessin current resources (user, biz, pic, menu) are mongoose Schemas and have dedicated router files located in the route folder. In addition to providing an interface to the pubic user, these files provide modularity.
  - For details about the input and output of routes, see the Routes section below.
 
 **Router**:
- - Individual resources (user, biz, menu, pics) have dedicated router files. These files are the interface between the server, middleware, and model files and mongo and Aws database. When a request is made, router calls the necessary functions to interact with the model. They then return a response to the route once a request has been processed in the model, also parse the json content in the incoming request (where applicable) and create and populate a req.body property using the npm package parse-body.
+ - Our resources (user, biz, menu, pics) have dedicated router files. These files are the interface between the server, middleware, model files, and databases (mongo and AWS). When a request is made, router calls the necessary functions to interact with the model. This returns a response to the route once a request has been processed in the model also parsing the json content in the incoming request (where applicable) and create and populate a req.body property using the npm package parse-body.
 
 # Routes
 ### POST:
@@ -54,7 +54,7 @@ This route will create a new user by providing a username, password, and email i
 
 Example request:
 ```  
-http POST wheatlessinv2.herokuapp.com/api/signup username='test-user' p assword='test-pwd' email='testemail@test.com'
+http POST wheatlessinv2.herokuapp.com/api/signup username='test-user' password='test-pwd' email='testemail@test.com'
 ```
 Example response:
 ```
@@ -69,20 +69,19 @@ X-Powered-By: Express
 eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6IjczMzIyNGUwNjc4ZDE2MWE0YzhkNTU4ZjBmZGUwYTJhNGFkYzYxZDBlNGY3YmU0MGU1YTFhMTkzYmQ3MWM0ZjMiLCJpYXQiOjE0ODQxNjI5NTd9.YSbRREgNdCxpRYJDk6BTVEptu0OUXvIvCFDvbzqkx9w
 ```
 
-A token will be returned that will only be used for the api/signin route. after signing-in, you will receive a new token that will be a reference for all future routes.
+A token will be returned that will only be used for the api/signin route. After sign-in, you will receive a new token that will be a reference for all future routes.
 ___
 **Biz Post**
 Example:https://wheatlessinv2.herokuapp.com/api/biz
 
 Required Data:
 
-Business name and EIN number is the minimun required parameter for signup.
-This route will authenticate the user and post business that contains a minimum required parameter.
+Business Name and EIN number is the minimum required parameter for signup.
+This route will authenticate the user and post a business that contains these required parameters.
 
 
 Authorization Header
-Bearer <response token from signin>
-it will be returned in JSON format once a user's token is verified. The response will contain a compleate business information as it was provided.
+Bearer <response token from signin> will return in JSON format once a user's token is verified. The response will contain the business information that was originally provided by the business owner.
 
  Example request:
 ```
@@ -108,7 +107,7 @@ X-Powered-By: Express
 }
 
 ```
-more information a bizness can have are:
+Additional information a business will contain:
  loc: {
     lng: { type: Number, min: -180, max: 180 },
     lat: { type: Number, min: -90, max: 90 }
@@ -126,13 +125,12 @@ Example:https://wheatlessinv2.herokuapp.com/api/biz/58768d9db3bd9616805d8d0e/men
 
 Required Data:
 
-No minimun required parameter for posting menu, after generating menu menu can be posted as menu.
-This route will authenticate the user and business and post menu.
+There is no minimum required parameter for posting a menu. After generating a menu, the menu can be posted.
+This route will authenticate the user and business and finally, post the menu.
 
 
 Authorization Header
-Bearer <response token from signin>
-it will be returned in JSON format once a user's token is verified. The response will contain a compleate menu information as it was provided.
+Bearer <response token from signin> will return in JSON format once a user's token is verified. The response will contain the menu information that was originally provided by the business owner.
 
 
 Example request:
@@ -163,13 +161,12 @@ Example:https://wheatlessinv2.herokuapp.com/api/biz
 
 Required Data:
 
-image file path.
-This route will authenticate the user and post business that contains a minimum required parameter.
+An image file path.
+This route will authenticate the user and post a business that contains the minimum required parameters.
 
 
 Authorization Header
-Bearer <response token from signin>
-it will be returned in JSON format once a user's token is verified. The response will contain a compleate business information as it was provided.
+Bearer <response token from signin> will return in JSON format once a user's token is verified. The response will contain the business information that was originally provided by the business owner.
 
  Example request:
  ```
@@ -203,9 +200,12 @@ GET /api/signin
 
 Example: https://wheatlessinv2.herokuapp.com/api/signin
 
-Required Data: Authorization header, Provide username and password as JSON
+Required Data:
 
-This route will require an authorization header that needs to include the username:password of the specific user to be authenticated. Signing in will return a brand new token that will be used for future user ID reference.
+Authorization header: username and password as JSON.
+
+This route will require an authorization header that needs to include the a username and password of the specific user to be authenticated. Signing in will return a brand new token that will be used for future user ID reference.
+
 Example request:
 ```
 http GET wheatlessinv2.herokuapp.com/api/signin --auth='test-user:test-pwd'
@@ -229,13 +229,13 @@ Example:https://wheatlessinv2.herokuapp.com/api/biz/58768d9db3bd9616805d8d0e
 
 Required Data:
 
-business id
+A Business ID.
 This route will return all matches that have the provided id.
 
 Authorization Header
-No authentication required for fetching these datas.
+No authentication required for fetching this data.
 
-All property matching menu to that individual business will populate and showup.
+All property matching menu to that individual business will populate and display.
 
 Example request:
 ```
@@ -269,15 +269,17 @@ GET /api/signin/update
 
 Example: https://wheatlessinv2.herokuapp.com/api/signin/update
 
-Required Data: Authorization header, Provide username and password as JSON
+Required Data:
+
+Authorization header: provide username and password as JSON
 
 This route will require an authorization header that needs to include the token of the specific user to be authenticated. Update in will return a brand new token that will be used for future update user.
 
-Authorization Header:Bearer <response token from signin>
-it will be returned in JSON format once a user's token is verified. The response will contain a compleate business information as it was provided.
+Authorization Header:
+Bearer <response token from signin> will be returned in JSON format once a user's token is verified. The response will contain the business information that was originally provided.
 Example request:
 ```
-http PUT wheatlessinv2.herokuapp.com/api/signin/update Au thorization:'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6Ijd mNTJiZjU4OGQ5YjA4NTdkYWE5MmMzMDdhNTQxYmUxNGJmYjE3OGU2M2M2ZDQ2ODFkMWQ5ODk 0MGI3NDQxZjAiLCJpYXQiOjE0ODQyMDIzMTZ9.lxIQxUk3xjzW89ZgKei546nwbrVKmA8Zed BSXBNRo4g' password='new password'
+http PUT wheatlessinv2.herokuapp.com/api/signin/update Authorization:'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6Ijd mNTJiZjU4OGQ5YjA4NTdkYWE5MmMzMDdhNTQxYmUxNGJmYjE3OGU2M2M2ZDQ2ODFkMWQ5ODk 0MGI3NDQxZjAiLCJpYXQiOjE0ODQyMDIzMTZ9.lxIQxUk3xjzW89ZgKei546nwbrVKmA8Zed BSXBNRo4g' password='new password'
 ```
 Example response:
 ```
@@ -345,9 +347,8 @@ Example:https://wheatlessinv2.herokuapp.com/api/biz/58768d9db3bd9616805d8d0e
 Required Data:
 business id
 
-Authorization Header
-Bearer <response token from signin>
-it will be returned in JSON format once a user's token is verified. The response will contain a compleate business information as it was provided.
+Authorization Header:
+Bearer <response token from signin> will be returned in JSON format once a user's token is verified. The response will contain the business information that was originally provided.
 
 
 Example request:
@@ -372,9 +373,8 @@ Required Data:
 picture id,
 This route will authenticate the user before deletion.
 
-Authorization Header
-Bearer <response token from signin>
-it will be returned in JSON format once a user's token is verified. The response will contain a compleate business information as it was provided.
+Authorization Header:
+Bearer <response token from signin> will be returned in JSON format once a user's token is verified. The response will contain the business information that was originally provided.
 
  Example request:
  ```
