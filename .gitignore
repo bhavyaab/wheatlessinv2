@@ -1,5 +1,9 @@
 # Created by https://www.gitignore.io/api/node,vim,macos,linux,windows
 
+# data directory, used by aws-mocks:
+data
+
+
 */node_modules
 .env
 
