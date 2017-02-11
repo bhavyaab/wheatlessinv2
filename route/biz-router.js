@@ -6,6 +6,7 @@ const createError = require('http-errors');
 const debug = require('debug')('wheatlessinv2:biz-router');
 
 const bearerAuth = require('../lib/bearer-auth-middleware.js');
+const geocoder = require('../lib/geocoder.js');
 const Biz = require('../model/biz.js');
 
 const bizRouter = module.exports = Router();
@@ -15,7 +16,24 @@ bizRouter.post('/api/biz', bearerAuth, jsonParser, function(req, res, next) {
   debug('POST /api/biz');
 
   req.body.userId = req.user._id;
-  new Biz(req.body).save()
+  debug('body:', req.body);
+  let biz = new Biz(req.body);
+
+  new Promise( (resolve, reject) => {
+    if(req.body.address) {
+      debug('finding address:',req.body.address);
+      return geocoder.find(req.body.address)
+      .then( geodata => {
+        debug('geodata:', geodata);
+        biz.loc = geodata.location;
+        resolve(biz);
+      })
+      //TODO OR should we silently fail?
+      .catch( err => reject(err));
+    }
+    resolve(biz);
+  })
+  .then( biz => biz.save())
   .then( biz => res.json(biz))
   .catch(next);
 });
@@ -29,18 +47,36 @@ bizRouter.get('/api/biz/:id', function(req, res, next) {
   .catch( err => next(createError(404, err.message)));
 });
 //only authenticated business can can update a biz.
-bizRouter.put('/api/biz/:id', bearerAuth, jsonParser,function(req, res, next) {
-  debug('GET /api/biz/:id', req.params.id);
+bizRouter.put('/api/biz/:id', bearerAuth, jsonParser, function(req, res, next) {
+  debug('PUT /api/biz/:id', req.params.id);
 
   Biz.findById(req.params.id)
+  .catch( err => next(createError(404, err.message)))
   .then( biz => {
-    if(`${req.user._id}` != `${biz.userId}`) return Promise.reject(createError(403, 'access denied'));
-    for(var prop in biz){
-      if(req.body[prop]) biz[prop] = req.body[prop];
+    if(`${req.user._id}` !== `${biz.userId}`) return Promise.reject(createError(403, 'access denied'));
+    // debug('before:',biz);
+    // debug('req.body.address:',req.body.address);
+    let addr = biz.address;
+    //TODO: Add a isChanged bool to decide if a save is necessary.
+    for(let prop in req.body) {
+      debug('updating:',biz[prop],'->',req.body[prop]);
+      biz[prop] = req.body[prop];
     }
-    return res.json(biz);
+    // debug('after:',biz);
+    if(biz.address !== addr) {
+      return geocoder.find(biz.address)
+      .then( geodata => {
+        debug('new geodata:', geodata);
+        biz.loc = geodata.location;
+        return biz.save();
+      })
+      .catch(next);
+    }
+    //TODO: if(!isChanged) return Promise.resolve(biz);
+    return biz.save();
   })
-  .catch( err => next(createError(404, err.message)));
+  .then( biz => res.json(biz))
+  .catch(next);
 });
 //Only owner of biz can delete.
 bizRouter.delete('/api/biz/:id', bearerAuth, function(req, res, next) {
@@ -51,8 +87,9 @@ bizRouter.delete('/api/biz/:id', bearerAuth, function(req, res, next) {
     if(biz.userId.toString() !== req.user._id.toString()) {
       return next(createError(403, 'invalid user, not owner of biz'));
     }
-    res.status(204).send('OK');
+    return Biz.findByIdAndRemove(req.params.id);
   })
+  .then( () => res.status(204).send('OK'))
   .catch( err => next(createError(404, err.message)));
 });
 

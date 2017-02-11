@@ -118,5 +118,6 @@ picRouter.delete('/api/pic/:picId', bearerAuth, jsonParser, function(req, res, n
       return res.json(data);
     });
   })
+  //TODO: Need to actually remove the pic from mongo.
   .catch(err => next(createError(404, err.message)));
 });
