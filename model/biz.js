@@ -19,7 +19,7 @@ const bizSchema = Schema({
     lng: { type: Number, min: -180, max: 180 },
     lat: { type: Number, min: -90, max: 90 }
   },
-  address: { Type: String }, //TODO: Breakdown address into address object
+  address: { type: String },
   //TODO: Consider allowing more than one menu per biz.
   menu: { Type: Schema.Types.ObjectId },
   url: { Type: String },
