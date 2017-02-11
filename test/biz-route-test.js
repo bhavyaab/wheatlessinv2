@@ -11,19 +11,9 @@ mongoose.Promise = Promise;
 
 const geo = require('./lib/mock-geocoder.js');
 const User = require('../model/user.js');
-const Biz = require('../model/biz.js');
 
 require('../server.js');
 
-// const testUser = {
-//   username: 'testUser',
-//   email: 'testUser@test.com',
-//   password: '123abc'
-// };
-// const testbiz = {
-//   name: 'test-biz',
-//   EIN: '01-2345678',
-// };
 const examples = {
   'codefellows': {
     name: 'Code Fellows',
