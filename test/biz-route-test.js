@@ -41,33 +41,19 @@ describe('Biz-router-test', function(){
     });
   });
   before( done => {
-    var newUser = new User({
-      username: 'FakeUser',
-      email: 'fakeUser@test.com',
-      password: 'fake'});
-    newUser.generatePasswordHash('abcd1234456')
-    .then( () => newUser.save())
-    .then( () => newUser.generateToken())
-    .then( token => {
-      this.newToken = token;
-      User.findByIdAndRemove(newUser._id, function (err, user) {
-        user.remove();
-        done();
-      });
+    mockUser()
+    .then( user => {
+      this.newToken = user.token;
+      return User.findByIdAndRemove(user._id);
     })
-    .catch(done);
+    .then( () => done());
   });
   after( done => {
     User.remove({})
     .then( () => done())
     .catch(done);
   });
-  //NOTE: If more than this.biz is created, we will need
-  //      to remove it with an after, but for now, the
-  //      DELETE test handles the cleanup. Also, the post
-  //      handles the creation. This means that tests are
-  //      dependent on each other, but the code will be
-  //      more concise this way.
+  // Uncomment the Biz cleanup if you see a dup key error.
   // after( done => {
   //   Biz.remove({})
   //   .then( () => done())
