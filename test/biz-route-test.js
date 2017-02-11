@@ -2,9 +2,6 @@
 
 require('./lib/test-env.js');
 
-
-//TODO: biz route test
-
 const expect = require('chai').expect;
 const request = require('superagent');
 const mongoose = require('mongoose');
@@ -12,6 +9,7 @@ const Promise = require('bluebird');
 const debug = require('debug')('wheatlessinv2:Biz-router-test');
 mongoose.Promise = Promise;
 
+const geomock = require('./lib/mock-geocoder.js');
 const User = require('../model/user.js');
 const Biz = require('../model/biz.js');
 
@@ -147,6 +145,29 @@ describe('Biz-router-test', function(){
           expect(res.body).to.have.property('userId');
           expect(res.body.userId).to.equal(`${this.userId}`);
           expect(res.status).to.equal(200);
+          done();
+        });
+      });
+    });
+
+    describe('valid post with address', () => {
+      it('should status 200', done => {
+        request.post(url)
+        .set({Authorization: `Bearer ${this.token}`})
+        .send({
+          name: 'testBiz',
+          EIN: '55-7654321',
+          address: '2901 3rd Ave, Seattle, WA'
+        })
+        .end( (err, res) => {
+          if(err) return done(err);
+          expect(res.status).to.equal(200);
+          expect(res.body.name).to.equal( 'testBiz');
+          expect(res.body.EIN).to.equal('55-7654321');
+          expect(res.body).to.have.property('userId');
+          expect(res.body.userId).to.equal(`${this.userId}`);
+          expect(res.body.loc.lat).to.equal(geomock.location.lat);
+          expect(res.body.loc.lng).to.equal(geomock.location.lng);
           done();
         });
       });

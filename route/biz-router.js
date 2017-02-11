@@ -6,6 +6,7 @@ const createError = require('http-errors');
 const debug = require('debug')('wheatlessinv2:biz-router');
 
 const bearerAuth = require('../lib/bearer-auth-middleware.js');
+const geocoder = require('../lib/geocoder.js');
 const Biz = require('../model/biz.js');
 
 const bizRouter = module.exports = Router();
@@ -15,7 +16,15 @@ bizRouter.post('/api/biz', bearerAuth, jsonParser, function(req, res, next) {
   debug('POST /api/biz');
 
   req.body.userId = req.user._id;
-  new Biz(req.body).save()
+  let biz = new Biz(req.body);
+  //TODO: What if !req.body.address?
+  //      Right now, the geocodeProm call will reject on missing address.
+  geocoder.find(req.body.address)
+  .then( geodata => {
+    debug('geodata:', geodata);
+    biz.loc = geodata.location;
+    return biz.save();
+  })
   .then( biz => res.json(biz))
   .catch(next);
 });
