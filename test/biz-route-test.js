@@ -9,42 +9,68 @@ const Promise = require('bluebird');
 const debug = require('debug')('wheatlessinv2:Biz-router-test');
 mongoose.Promise = Promise;
 
-const geomock = require('./lib/mock-geocoder.js');
+const geo = require('./lib/mock-geocoder.js');
 const User = require('../model/user.js');
 const Biz = require('../model/biz.js');
 
 require('../server.js');
 
-const testUser = {
-  username: 'testUser',
-  email: 'testUser@test.com',
-  password: '123abc'
+// const testUser = {
+//   username: 'testUser',
+//   email: 'testUser@test.com',
+//   password: '123abc'
+// };
+// const testbiz = {
+//   name: 'test-biz',
+//   EIN: '01-2345678',
+// };
+const examples = {
+  'codefellows': {
+    name: 'Code Fellows',
+    EIN: '55-5556666',
+    address: '2901 3rd Ave, Seattle, WA'
+  },
+  'crocodile': {
+    name: 'Crocodile',
+    EIN: '66-6667777',
+    address: '2200 2nd Ave, Seattle, WA'
+  }
 };
-const testbiz = {
-  name: 'test-biz',
-  EIN: '01-2345678',
-};
+
 const url = `http://localhost:${process.env.PORT}/api/biz`;
+
+const mockUser = require('./lib/mock-user.js');
 
 describe('Biz-router-test', function(){
   before( done => {
-    var user = new User(testUser);
-    user.generatePasswordHash(testUser.password)
-    .then( () => user.save())
-    .then( () => user.generateToken())
-    .then( token => {
-      this.token = token;
+    mockUser()
+    .then( user => {
+      this.token = user.token;
       this.userId = user._id;
       done();
-    })
-    .catch(done);
+    });
   });
+
+
+  // before( done => {
+  //   var user = new User(testUser);
+  //   user.generatePasswordHash(testUser.password)
+  //   .then( () => user.save())
+  //   .then( () => user.generateToken())
+  //   .then( token => {
+  //     this.token = token;
+  //     this.userId = user._id;
+  //     done();
+  //   })
+  //   .catch(done);
+  // });
+
   before( done => {
     var newUser = new User({
       username: 'FakeUser',
       email: 'fakeUser@test.com',
       password: 'fake'});
-    newUser.generatePasswordHash(testUser.password)
+    newUser.generatePasswordHash('abcd1234456')
     .then( () => newUser.save())
     .then( () => newUser.generateToken())
     .then( token => {
@@ -56,34 +82,36 @@ describe('Biz-router-test', function(){
     })
     .catch(done);
   });
-  before( done => {
-    testbiz.userId = this.userId;
-    var biz = new Biz(testbiz);
-    biz.save()
-    .then( biz => {
-      this.biz = biz;
-      done();
-    })
-    .catch(done);
-  });
+  // before( done => {
+  //   examples.codefellows.userId = this.userId;
+  //   new Biz(examples.codefellows).save()
+  //   .then( biz => {
+  //     this.biz = biz;
+  //     done();
+  //   });
+  // });
+  //TODO: Promise.all() | helper function
   after( done => {
     User.remove({})
     .then( () => done())
     .catch(done);
   });
-  after( done => {
-    Biz.remove({})
-    .then( () => done())
-    .catch(done);
-  });
+  //NOTE: If more than this.biz is created, we will need
+  //      to remove it with an after, but for now, the
+  //      DELETE test handles the cleanup. Also, the post
+  //      handles the creation. This means that tests are
+  //      dependent on each other, but the code will be
+  //      more concise this way.
+  // after( done => {
+  //   Biz.remove({})
+  //   .then( () => done())
+  //   .catch(done);
+  // });
   describe('Biz:POST :/api/biz', () => {
     describe('invalid path', () => {
       it('should expect 404 status', done => {
         request.post(`${url}/abcd`)
-        .send({
-          name: 'testBiz',
-          EIN: '98-7654321',
-        })
+        .send(examples.codefellows)
         .end( (err, res) => {
           expect(res.status).to.equal(404);
           expect(res.text).to.equal('Cannot POST /api/biz/abcd\n');
@@ -94,10 +122,7 @@ describe('Biz-router-test', function(){
     describe('missing token', () => {
       it('should expect 401 status', done => {
         request.post(`${url}`)
-        .send({
-          name: 'testBiz',
-          EIN: '98-7654321',
-        })
+        .send(examples.codefellows)
         .end( (err, res) => {
           expect(res.status).to.equal(401);
           expect(res.text).to.equal('UnauthorizedError');
@@ -109,10 +134,7 @@ describe('Biz-router-test', function(){
       it('expect 400 status', done => {
         request.post(`${url}`)
         .set({Authorization: `Bearer ${this.newToken}`})
-        .send({
-          name: 'testBiz',
-          EIN: '98-7654321',
-        })
+        .send(examples.codefellows)
         .end( (err, res) => {
           expect(res.status).to.equal(400);
           done();
@@ -134,44 +156,39 @@ describe('Biz-router-test', function(){
       it('should status 200', done => {
         request.post(`${url}`)
         .set({Authorization: `Bearer ${this.token}`})
-        .send({
-          name: 'testBiz',
-          EIN: '98-7654321',
-        })
+        .send(examples.codefellows)
         .end( (err, res) => {
           if(err) return done(err);
-          expect(res.body.name).to.equal( 'testBiz');
-          expect(res.body.EIN).to.equal('98-7654321');
+          expect(res.body.name).to.equal(examples.codefellows.name);
+          expect(res.body.EIN).to.equal(examples.codefellows.EIN);
           expect(res.body).to.have.property('userId');
           expect(res.body.userId).to.equal(`${this.userId}`);
           expect(res.status).to.equal(200);
+          this.biz = res.body;
+          debug('this.biz:',this.biz);
           done();
         });
       });
     });
 
-    describe('valid post with address', () => {
-      it('should status 200', done => {
-        request.post(url)
-        .set({Authorization: `Bearer ${this.token}`})
-        .send({
-          name: 'testBiz',
-          EIN: '55-7654321',
-          address: '2901 3rd Ave, Seattle, WA'
-        })
-        .end( (err, res) => {
-          if(err) return done(err);
-          expect(res.status).to.equal(200);
-          expect(res.body.name).to.equal( 'testBiz');
-          expect(res.body.EIN).to.equal('55-7654321');
-          expect(res.body).to.have.property('userId');
-          expect(res.body.userId).to.equal(`${this.userId}`);
-          expect(res.body.loc.lat).to.equal(geomock.location.lat);
-          expect(res.body.loc.lng).to.equal(geomock.location.lng);
-          done();
-        });
-      });
-    });
+    // describe('valid post with address', () => {
+    //   it('should status 200', done => {
+    //     request.post(url)
+    //     .set({Authorization: `Bearer ${this.token}`})
+    //     .send(examples.codefellows)
+    //     .end( (err, res) => {
+    //       if(err) return done(err);
+    //       expect(res.status).to.equal(200);
+    //       expect(res.body.name).to.equal(examples.codefellows.name);
+    //       expect(res.body.EIN).to.equal(examples.codefellows.EIN);
+    //       expect(res.body).to.have.property('userId');
+    //       expect(res.body.userId).to.equal(`${this.userId}`);
+    //       // expect(res.body.loc.lat).to.equal(geomock.location.lat);
+    //       // expect(res.body.loc.lng).to.equal(geomock.location.lng);
+    //       done();
+    //     });
+    //   });
+    // });
   });
   describe('GET: api/biz/:id', () => {
     describe('invalid path', () => {
@@ -198,9 +215,9 @@ describe('Biz-router-test', function(){
         .end( (err, res) => {
           if(err) return done(err);
           expect(res.status).to.equal(200);
-          expect(res.body.name).to.equal(testbiz.name);
+          expect(res.body.name).to.equal(examples.codefellows.name);
           expect(res.body._id).to.equal(`${this.biz._id}`);
-          expect(res.body.EIN).to.equal(testbiz.EIN);
+          expect(res.body.EIN).to.equal(examples.codefellows.EIN);
           done();
         });
       });
@@ -240,20 +257,41 @@ describe('Biz-router-test', function(){
         });
       });
     });
-    describe('valid id', () => {
+    // describe('valid id', () => {
+    //   it('expect res status 200', done => {
+    //     request.put(`${url}/${this.biz._id}`)
+    //     .set({authorization: `Bearer ${this.token}`})
+    //     //TODO: This should send a body, currently a false positive
+    //     .end( (err, res) => {
+    //       if(err) return done(err);
+    //       expect(res.status).to.equal(200);
+    //       expect(res.body.name).to.equal(examples.codefellows.name);
+    //       expect(res.body._id).to.equal(`${this.biz._id}`);
+    //       expect(res.body.EIN).to.equal(examples.codefellows.EIN);
+    //       done();
+    //     });
+    //   });
+    // });
+    describe('valid id, update address ***********************************', () => {
       it('expect res status 200', done => {
+        // debug('updating to:', examples.crocodile);
+        debug('this.biz:', this.biz);
         request.put(`${url}/${this.biz._id}`)
         .set({authorization: `Bearer ${this.token}`})
+        .send({
+          name: examples.crocodile.name,
+          address: examples.crocodile.address
+        })
         .end( (err, res) => {
           if(err) return done(err);
           expect(res.status).to.equal(200);
-          expect(res.body.name).to.equal(testbiz.name);
+          expect(res.body.name).to.equal(examples.crocodile.name);
           expect(res.body._id).to.equal(`${this.biz._id}`);
-          expect(res.body.EIN).to.equal(testbiz.EIN);
+          //TODO: expect res.body.loc to deep eq geo.crocodile
           done();
         });
       });
-    });
+    }); //valid id, update address
   });
   describe('DELETE: api/biz/:id', () => {
     describe('invalid path', () => {
