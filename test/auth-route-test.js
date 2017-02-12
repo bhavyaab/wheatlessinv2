@@ -13,7 +13,6 @@ require('./lib/test-env.js');
 require('../server.js');
 
 const exampleUser = {
-  // username: 'theexampleplayer',
   email: 'somebody@example.com',
   password: '123abc'
 };
@@ -56,20 +55,6 @@ describe('Auth Routes', function() {
       });
     }); // valid body
 
-    //--- No longer needed ----
-    // describe('with a missing username', function() {
-    //   after( done => cleanup(done)); //Just in case?
-    //
-    //   it('should return a 400', done => {
-    //     request.post(`${url}/api/signup`)
-    //     .send({ email: exampleUser.email, password: exampleUser.password })
-    //     .end( (err, res) => {
-    //       expect(res.status).to.equal(400);
-    //       done();
-    //     });
-    //   });
-    // }); // missing username
-
     describe('with a missing password', () => {
       it('should return a 400', done => {
         request.post(`${url}/api/signup`)
@@ -94,18 +79,6 @@ describe('Auth Routes', function() {
   }); // POST /api/signup
 
   describe('GET /api/signin', () => {
-    // before( done => {
-    //   let user = new User(exampleUser);
-    //   user.generatePasswordHash(exampleUser.password)
-    //   .then( user => user.save())
-    //   .then( user => {
-    //     this.tempUser = user;
-    //     done();
-    //   });
-    // });
-    //
-    // after( done => cleanup(done));
-
     describe('with a valid email and password', () => {
       it('should return a token', done => {
         request.get(`${url}/api/signin`)
@@ -143,24 +116,6 @@ describe('Auth Routes', function() {
 
   //TODO: This should just be for changepass
   describe.skip('PUT /api/signin', () => {
-    // before( done => {
-    //   var user = new User(exampleUser);
-    //   user.generatePasswordHash(exampleUser.password)
-    //   .then( () => user.save())
-    //   .then( () => user.generateToken())
-    //   .then( token => {
-    //     this.token = token;
-    //     done();
-    //   })
-    //   .catch(done);
-    // });
-    //
-    // after( done => {
-    //   User.remove({})
-    //   .then( () => done())
-    //   .catch(done);
-    // });
-
     let update = {
       email: 'update@example.com',
       password: 'updatePassword'
