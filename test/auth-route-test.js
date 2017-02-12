@@ -13,7 +13,7 @@ require('./lib/test-env.js');
 require('../server.js');
 
 const exampleUser = {
-  username: 'theexampleplayer',
+  // username: 'theexampleplayer',
   email: 'somebody@example.com',
   password: '123abc'
 };
@@ -27,7 +27,9 @@ function cleanup(done) {
 }
 
 describe('Auth Routes', function() {
-  describe('GET /some/bogus/route', function() {
+  after( done => cleanup(done));
+
+  describe('GET /some/bogus/route', () => {
     it('should return a 404', done => {
       request.get(`${url}/some/bogus/route`)
       .end( (err, res) => {
@@ -37,9 +39,8 @@ describe('Auth Routes', function() {
     });
   }); // Bogus Routes
 
-  describe('POST /api/signup', function() {
-    describe('with a valid body', function() {
-      after( done => cleanup(done));
+  describe('POST /api/signup', () => {
+    describe('with a valid body', () => {
 
       it('should return a token', done => {
         request.post(`${url}/api/signup`)
@@ -48,30 +49,31 @@ describe('Auth Routes', function() {
           if(err) done(err);
           expect(res.status).to.equal(200);
           expect(res.text).to.be.a('string');
+          this.token = res.text;
+          console.log('token:',this.token);
           done();
         });
       });
     }); // valid body
 
-    describe('with a missing username', function() {
-      after( done => cleanup(done)); //Just in case?
+    //--- No longer needed ----
+    // describe('with a missing username', function() {
+    //   after( done => cleanup(done)); //Just in case?
+    //
+    //   it('should return a 400', done => {
+    //     request.post(`${url}/api/signup`)
+    //     .send({ email: exampleUser.email, password: exampleUser.password })
+    //     .end( (err, res) => {
+    //       expect(res.status).to.equal(400);
+    //       done();
+    //     });
+    //   });
+    // }); // missing username
 
+    describe('with a missing password', () => {
       it('should return a 400', done => {
         request.post(`${url}/api/signup`)
-        .send({ email: exampleUser.email, password: exampleUser.password })
-        .end( (err, res) => {
-          expect(res.status).to.equal(400);
-          done();
-        });
-      });
-    }); // missing username
-
-    describe('with a missing password', function() {
-      after( done => cleanup(done)); //Just in case?
-
-      it('should return a 400', done => {
-        request.post(`${url}/api/signup`)
-        .send({ username: exampleUser.username, email: exampleUser.email })
+        .send({ email: exampleUser.email })
         .end( (err, res) => {
           expect(res.status).to.equal(400);
           done();
@@ -79,38 +81,35 @@ describe('Auth Routes', function() {
       });
     }); // missing password
 
-    describe('with a missing email', function() {
-      after( done => cleanup(done)); //Just in case?
-
+    describe('with a missing email', () => {
       it('should return a 400', done => {
         request.post(`${url}/api/signup`)
-        .send({ username: exampleUser.username, password: exampleUser.password })
+        .send({ password: exampleUser.password })
         .end( (err, res) => {
           expect(res.status).to.equal(400);
           done();
         });
       });
     }); // missing email
-
   }); // POST /api/signup
 
-  describe('GET /api/signin', function() {
-    before( done => {
-      let user = new User(exampleUser);
-      user.generatePasswordHash(exampleUser.password)
-      .then( user => user.save())
-      .then( user => {
-        this.tempUser = user;
-        done();
-      });
-    });
+  describe('GET /api/signin', () => {
+    // before( done => {
+    //   let user = new User(exampleUser);
+    //   user.generatePasswordHash(exampleUser.password)
+    //   .then( user => user.save())
+    //   .then( user => {
+    //     this.tempUser = user;
+    //     done();
+    //   });
+    // });
+    //
+    // after( done => cleanup(done));
 
-    after( done => cleanup(done));
-
-    describe('with a valid username and password', () => {
+    describe('with a valid email and password', () => {
       it('should return a token', done => {
         request.get(`${url}/api/signin`)
-        .auth(exampleUser.username, exampleUser.password)
+        .auth(exampleUser.email, exampleUser.password)
         .end( (err, res) => {
           expect(res.status).to.equal(200);
           expect(res.text).to.be.a('string');
@@ -122,7 +121,7 @@ describe('Auth Routes', function() {
     describe('with incorrect password', () => {
       it('should return a 401', done => {
         request.get(`${url}/api/signin`)
-        .auth(exampleUser.username, 'not_the_real_password')
+        .auth(exampleUser.email, 'not_the_real_password')
         .end( (err, res) => {
           expect(res.status).to.equal(401);
           done();
@@ -130,10 +129,10 @@ describe('Auth Routes', function() {
       });
     }); // incorrect password
 
-    describe('unknown username', () => {
+    describe('unknown email', () => {
       it('should return a 401', done => {
         request.get(`${url}/api/signin`)
-        .auth('not_a_user', exampleUser.password)
+        .auth('not_a_real@email.com', exampleUser.password)
         .end( (err, res) => {
           expect(res.status).to.equal(401);
           done();
@@ -142,32 +141,38 @@ describe('Auth Routes', function() {
     }); //unknown username
   }); // GET /api/signin
 
-  describe('PUT /api/signin', function(){
-    before( done => {
-      var user = new User(exampleUser);
-      user.generatePasswordHash(exampleUser.password)
-      .then( () => user.save())
-      .then( () => user.generateToken())
-      .then( token => {
-        this.token = token;
-        done();
-      })
-      .catch(done);
-    });
+  //TODO: This should just be for changepass
+  describe.skip('PUT /api/signin', () => {
+    // before( done => {
+    //   var user = new User(exampleUser);
+    //   user.generatePasswordHash(exampleUser.password)
+    //   .then( () => user.save())
+    //   .then( () => user.generateToken())
+    //   .then( token => {
+    //     this.token = token;
+    //     done();
+    //   })
+    //   .catch(done);
+    // });
+    //
+    // after( done => {
+    //   User.remove({})
+    //   .then( () => done())
+    //   .catch(done);
+    // });
 
-    after( done => {
-      User.remove({})
-      .then( () => done())
-      .catch(done);
-    });
+    let update = {
+      email: 'update@example.com',
+      password: 'updatePassword'
+    };
+
+    //NOTE: All unknown routes are handled in one place,
+    //      so we really only need one 404 test.
     describe('with valid body and invalid path', () => {
       it('should expect res status 404', done => {
         request.put(`${url}/api/signin/updatenot`)
         .set({Authorization: `Bearer ${this.token}`})
-        .send({
-          email: 'update@example.com',
-          password: 'updatePassword'
-        })
+        .send(update)
         .end( (err, res) => {
           expect(res.status).to.equal(404);
           done();
@@ -178,10 +183,7 @@ describe('Auth Routes', function() {
       it('should expect res status 401', done => {
         request.put(`${url}/api/signin`)
         .set({Authorization: 'Bearer 1234567890123456789'})
-        .send({
-          email: 'update@example.com',
-          password: 'updatePassword'
-        })
+        .send(update)
         .end( (err, res) => {
           expect(res.status).to.equal(401);
           done();
@@ -192,16 +194,12 @@ describe('Auth Routes', function() {
       it('should expect res status 200', done => {
         request.put(`${url}/api/signin`)
         .set({Authorization: `Bearer ${this.token}`})
-        .send({
-          email: 'update@example.com',
-          password: 'updatePassword'
-        })
+        .send(update)
         .end( (err, res) => {
           if(err) return done(err);
           expect(res.status).to.equal(200);
-          expect(res.body.email).to.equal('update@example.com');
-          expect(res.body.password).to.equal('updatePassword');
-          expect(res.body.username).to.equal(exampleUser.username);
+          expect(res.body.email).to.equal(update.email);
+          expect(res.body.password).to.equal(update.password);
           done();
         });
       });

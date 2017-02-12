@@ -19,7 +19,6 @@ authRouter.post('/api/signup', jsonParser, function(req, res, next) {
 
   let user = new User(req.body);
   user.generatePasswordHash(password)
-  .then( user => user.save())
   .then( user => user.generateToken())
   .then( token => res.send(token))
   .catch(next);
@@ -29,7 +28,7 @@ authRouter.post('/api/signup', jsonParser, function(req, res, next) {
 authRouter.get('/api/signin', basicAuth, function(req, res, next) {
   debug('GET /api/signin');
 
-  User.findOne({ username: req.auth.username })
+  User.findOne({ email: req.auth.email })
   .then( user => user.comparePasswordHash(req.auth.password))
   .then( user => user.generateToken())
   .then( token => res.send(token))
@@ -40,12 +39,13 @@ authRouter.get('/api/signin', basicAuth, function(req, res, next) {
 authRouter.put('/api/signin', bearerAuth, jsonParser, function(req, res, next) {
   debug('GET /api/signin');
 
-  User.findById(req.user._id)
-  .then( user => {
-    for(var prop in user){
-      if(req.body[prop]) user[prop] = req.body[prop];
-    }
-    return res.json(user);
-  })
-  .catch( err => next(createError(404, err.message)));
+  return next(createError(500, 'PUT /api/signin disabled'));
+  // User.findById(req.user._id)
+  // .then( user => {
+  //   for(var prop in user){
+  //     if(req.body[prop]) user[prop] = req.body[prop];
+  //   }
+  //   return res.json(user);
+  // })
+  // .catch( err => next(createError(404, err.message)));
 });
