@@ -32,13 +32,15 @@ authRouter.get('/api/signin', basicAuth, function(req, res, next) {
   User.findOne({ username: req.auth.username })
   .then( user => user.comparePasswordHash(req.auth.password))
   .then( user => user.generateToken())
-  .then( token => res.send(token))
+  .then( token => {
+		return res.send(token)
+	})
   .catch( err => next(createError(401, err.message)));
 });
 
 //DONE: User PUT to update
 authRouter.put('/api/signin', bearerAuth, jsonParser, function(req, res, next) {
-  debug('GET /api/signin');
+  debug('PUT /api/signin');
 
   User.findById(req.user._id)
   .then( user => {
