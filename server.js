@@ -3,6 +3,7 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const morgan = require('morgan');
+const cors = require('cors');
 const mongoose = require('mongoose');
 const Promise = require('bluebird');
 const debug = require('debug')('wheatlessinv2:server');
@@ -23,6 +24,7 @@ const app = express();
 mongoose.connect(process.env.MONGODB_URI);
 
 app.use(morgan('dev'));
+app.use(cors);
 
 app.use(authRouter);
 app.use(menuRouter);
