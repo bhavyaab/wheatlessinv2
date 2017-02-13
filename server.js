@@ -22,7 +22,18 @@ const app = express();
 mongoose.connect(process.env.MONGODB_URI);
 
 app.use(morgan('dev'));
-
+app.all('*', function(req, res, next) {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'accept, content-type, Authorization');
+     // intercept OPTIONS method
+    if ('OPTIONS' == req.method) {
+      res.send(200);
+    }
+    else {
+      next();
+    }
+});
 app.use(authRouter);
 app.use(menuRouter);
 app.use(bizRouter);

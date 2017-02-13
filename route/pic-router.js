@@ -108,6 +108,8 @@ picRouter.delete('/api/pic/:picId', bearerAuth, jsonParser, function(req, res, n
       Bucket: process.env.AWS_BUCKET,
       Key: pic.objectKey
     };
+    Pic.findByIdAndRemove(pic._id)
+    .then(() => debug('pic deleted'));
     return params;
   })
   .then( params => {
