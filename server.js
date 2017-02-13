@@ -24,7 +24,7 @@ const app = express();
 mongoose.connect(process.env.MONGODB_URI);
 
 app.use(morgan('dev'));
-app.use(cors);
+app.use(cors());
 
 app.use(authRouter);
 app.use(menuRouter);
