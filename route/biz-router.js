@@ -46,6 +46,7 @@ bizRouter.get('/api/biz/:id', function(req, res, next) {
   .then( biz => res.json(biz))
   .catch( err => next(createError(404, err.message)));
 });
+
 //only authenticated business can can update a biz.
 bizRouter.put('/api/biz/:id', bearerAuth, jsonParser, function(req, res, next) {
   debug('PUT /api/biz/:id', req.params.id);
@@ -54,15 +55,12 @@ bizRouter.put('/api/biz/:id', bearerAuth, jsonParser, function(req, res, next) {
   .catch( err => next(createError(404, err.message)))
   .then( biz => {
     if(`${req.user._id}` !== `${biz.userId}`) return Promise.reject(createError(403, 'access denied'));
-    // debug('before:',biz);
-    // debug('req.body.address:',req.body.address);
     let addr = biz.address;
     //TODO: Add a isChanged bool to decide if a save is necessary.
     for(let prop in req.body) {
       debug('updating:',biz[prop],'->',req.body[prop]);
       biz[prop] = req.body[prop];
     }
-    // debug('after:',biz);
     if(biz.address !== addr) {
       return geocoder.find(biz.address)
       .then( geodata => {
@@ -78,6 +76,7 @@ bizRouter.put('/api/biz/:id', bearerAuth, jsonParser, function(req, res, next) {
   .then( biz => res.json(biz))
   .catch(next);
 });
+
 //Only owner of biz can delete.
 bizRouter.delete('/api/biz/:id', bearerAuth, function(req, res, next) {
   debug('DELETE /api/biz/:id');
