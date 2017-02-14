@@ -5,7 +5,7 @@ const dotenv = require('dotenv');
 const morgan = require('morgan');
 const cors = require('cors');
 const mongoose = require('mongoose');
-const Promise = require('bluebird');
+//const Promise = require('bluebird');
 const debug = require('debug')('wheatlessinv2:server');
 
 mongoose.Promise = Promise;
