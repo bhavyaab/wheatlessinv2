@@ -98,6 +98,8 @@ picRouter.post('/api/biz/:bizId/pic', bearerAuth, upload.single('image'), functi
   .catch(next);
 });
 //pic could be deleted by only authenticated user
+
+//TODO: implement delete for multiple pics, remove the pic from the biz's pic array
 picRouter.delete('/api/pic/:picId', bearerAuth, jsonParser, function(req, res, next){
   debug('DELETE api/pic/:picId');
 
@@ -121,3 +123,12 @@ picRouter.delete('/api/pic/:picId', bearerAuth, jsonParser, function(req, res, n
   //TODO: Need to actually remove the pic from mongo.
   .catch(err => next(createError(404, err.message)));
 });
+
+picRouter.get('/api/biz/:bizId/pic', (req, res, next) => {
+  debug('GET /api/biz/:bizId/pic');
+
+  Biz.findById(req.params.bizId)
+  .then( foundBiz => {
+    res.json()
+  })
+})
