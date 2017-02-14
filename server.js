@@ -13,6 +13,7 @@ const menuRouter = require('./route/menu-router.js');
 const authRouter = require('./route/auth-router.js');
 const bizRouter = require('./route/biz-router.js');
 const picRouter = require('./route/pic-router.js');
+const searchRouter = require('./route/search-router.js');
 const errors = require('./lib/error-middleware.js');
 
 dotenv.load();
@@ -30,6 +31,7 @@ app.use(authRouter);
 app.use(menuRouter);
 app.use(bizRouter);
 app.use(picRouter);
+app.use(searchRouter);
 app.use(errors);
 
 app.get('/', (req, res) => {
