@@ -129,6 +129,7 @@ picRouter.get('/api/biz/:bizId/pic', (req, res, next) => {
 
   Biz.findById(req.params.bizId)
   .then( foundBiz => {
-    res.json()
-  })
-})
+    res.send(foundBiz.menuPics);
+    next();
+  });
+});
