@@ -9,11 +9,12 @@ const Router = require('express').Router;
 const createError = require('http-errors');
 const debug = require('debug')('wheatlessinv2:pic-router');
 const jsonParser = require('body-parser').json();
+const Promise = require('bluebird');
 
 const Biz = require('../model/biz.js');
 const Pic  = require('../model/pic.js');
 
-AWS.config.setPromisesDependency(require('bluebird'));
+AWS.config.setPromisesDependency(Promise);
 
 const dataDir = `${__dirname}/../data`;
 const upload = multer({ dest: dataDir });
