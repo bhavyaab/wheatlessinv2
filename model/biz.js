@@ -21,7 +21,8 @@ const bizSchema = Schema({
   },
   address: { type: String },
   //TODO: Consider allowing more than one menu per biz.
-  menu: { Type: Schema.Types.ObjectId },
+  //menu: { Type: Schema.Types.ObjectId },
+  menuPics: [Schema.Types.ObjectId],
   url: { Type: String },
   email: { Type: String },
   phone: { Type: String }
