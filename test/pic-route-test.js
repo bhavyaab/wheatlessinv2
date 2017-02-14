@@ -9,7 +9,6 @@ const request = require('superagent');
 
 const User = require('../model/user.js');
 const Biz  = require('../model/biz.js');
-const Menu = require('../model/menu.js');
 const Pic  = require('../model/pic.js');
 
 require('../server.js');
