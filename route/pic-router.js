@@ -14,7 +14,7 @@ const jsonParser = require('body-parser').json();
 const Biz = require('../model/biz.js');
 const Pic  = require('../model/pic.js');
 
-//AWS.config.setPromisesDependency(Promise);
+AWS.config.setPromisesDependency(Promise);
 
 const dataDir = `${__dirname}/../data`;
 const upload = multer({ dest: dataDir });
@@ -30,6 +30,18 @@ function s3uploadProm(params) {
     });
   });
 }
+//
+// function s3upload(params) {
+//   let s3 = new AWS.S3(); //Moving s3 here allows the mocks to work.
+//   debug('s3uploadProm', params.Key);
+//   return new Promise( (resolve, reject) => {
+//     s3.upload(params, (err, s3data) => {
+//       if(err) return reject(err);
+//       resolve(s3data);
+//     });
+//   });
+// }
+
 
 // function s3deleteProm(params) {
 //   let s3 = new AWS.S3();
