@@ -20,20 +20,20 @@ const dataDir = `${__dirname}/../data`;
 const upload = multer({ dest: dataDir });
 const bearerAuth = require('../lib/bearer-auth-middleware.js');
 
-function s3uploadProm(params) {
-  let s3 = new AWS.S3(); //Moving s3 here allows the mocks to work.
-  debug('s3uploadProm', params.Key);
-  return new Promise( (resolve, reject) => {
-    s3.upload(params, (err, s3data) => {
-      if(err) return reject(err);
-      resolve(s3data);
-    });
-  });
-}
+// function s3uploadProm(params) {
+//   let s3 = new AWS.S3(); //Moving s3 here allows the mocks to work.
+//   debug('s3uploadProm', params.Key);
+//   return new Promise( (resolve, reject) => {
+//     s3.upload(params, (err, s3data) => {
+//       if(err) return reject(err);
+//       resolve(s3data);
+//     });
+//   });
+// }
 //
 // function s3upload(params) {
 //   let s3 = new AWS.S3(); //Moving s3 here allows the mocks to work.
-//   debug('s3uploadProm', params.Key);
+//   debug('s3upload, params:', params);
 //   return new Promise( (resolve, reject) => {
 //     s3.upload(params, (err, s3data) => {
 //       if(err) return reject(err);
@@ -87,7 +87,18 @@ picRouter.post('/api/biz/:bizId/pic', bearerAuth, upload.single('image'), functi
   .then( foundBiz => {
     if(!foundBiz) return Promise.reject(createError(404, 'biz not found'));
     tempBiz = foundBiz;
-    return s3uploadProm(params);
+    //return s3uploadProm(params);
+
+    let s3 = new AWS.S3(); //Moving s3 here allows the mocks to work.
+    debug('s3upload, bucket:', params.Bucket, 'Key:', params.Key);
+    return new Promise( (resolve, reject) => {
+      s3.upload(params, (err, s3data) => {
+        debug('s3 upload done, data:', s3data);
+        if(err) return reject(err);
+        return resolve(s3data);
+      });
+    });
+
   })
   .then( s3data => {
     debug('s3data:', s3data);
