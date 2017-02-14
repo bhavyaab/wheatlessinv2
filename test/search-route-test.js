@@ -11,10 +11,8 @@ const User = require('../model/user.js');
 const Biz = require('../model/biz.js');
 
 require('../server.js');
-// const server = require('../server.js');
-// const serverToggle = require('./lib/server-toggle.js');
 
-const url = `http://localhost:${process.env.PORT}/api/biz`;
+const url = `http://localhost:${process.env.PORT}/api/search`;
 
 const mockUser = require('./lib/mock-user.js');
 
@@ -67,7 +65,7 @@ describe('Search Route', function() {
     ]);
   });
 
-  describe('GET /api/biz?southwest=<lat,lng>&norteast=<lat,lng>', () => {
+  describe('GET /api/search?southwest=<lat,lng>&norteast=<lat,lng>', () => {
     describe('with a valid box, containing an item', () => {
       it('should return a list of items', done => {
         request.get(url)

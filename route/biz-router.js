@@ -92,39 +92,13 @@ bizRouter.delete('/api/biz/:id', bearerAuth, function(req, res, next) {
   .catch( err => next(createError(404, err.message)));
 });
 
-//PUBLIC access to search, although we may want to try to lock down the CORS
-bizRouter.get('/api/biz', function(req, res, next) {
-  debug('GET /api/biz q:', req.query);
-  if(!req.query || req.query === {}) {
-    return next(createError(400, 'missing query'));
-  }
+bizRouter.get('/api/biz', bearerAuth, function(req, res, next) {
+  debug('GET /api/biz');
 
-  if(!req.query.southwest) return next(createError(400, 'missing southwest'));
-  if(!req.query.northeast) return next(createError(400, 'missing northeast'));
-
-  let lowerLeft  = req.query.southwest.split(',');
-  let upperRight = req.query.northeast.split(',');
-
-  if(!isValidLoc(lowerLeft) || !isValidLoc(upperRight)) {
-    return next(createError(400, 'coordinates out of bounds'));
-  }
-
-  Biz.where('loc')
-  .within().box(lowerLeft, upperRight)
-  .then( bizs => res.json(bizs))
-  .catch(next);
+  //else return the user's biz, if any.
+  Biz.find({ userId: req.user._id })
+  .catch( () => next(createError(404, 'user has no biz')))
+  .then( results => {
+    return res.json(results);
+  });
 });
-
-function isValidLoc(loc) {
-  return isValidLatitude(loc[0]) && isValidLongitude(loc[1]);
-}
-
-function isValidLatitude(lat) {
-  if(lat < -90 || lat > 90) return false;
-  return true;
-}
-
-function isValidLongitude(lng) {
-  if(lng < -180 || lng > 180) return false;
-  return true;
-}

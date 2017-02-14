@@ -127,6 +127,22 @@ describe('Biz-router-test', function(){
     });
   });
 
+  describe('GET: api/biz', () => {
+    describe('valid token and biz exists', () => {
+      it('should return an array of bizs', done => {
+        request.get(url)
+        .set({Authorization: `Bearer ${this.token}`})
+        .end( (err, res) => {
+          expect(res.body).to.be.an('array');
+          //Currently only having a single biz per user,
+          //but the route will return an array of 1 item.
+          expect(res.body[0]).to.deep.equal(this.biz);
+          done();
+        });
+      });
+    });
+  });
+
   describe('GET: api/biz/:id', () => {
     describe('invalid path', () => {
       it('expect error 404', done => {
