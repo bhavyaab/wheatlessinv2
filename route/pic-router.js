@@ -48,6 +48,8 @@ const picRouter = module.exports = Router();
 picRouter.post('/api/biz/:bizId/pic', bearerAuth, upload.single('image'), function(req, res, next) {
   debug('POST /api/biz/:bizId/pic', req.params.bizId);
 
+  debug('req.params:', req.params);
+
   if (!req.file) {
     return next(createError(400, 'file not found'));
   }
@@ -75,6 +77,7 @@ picRouter.post('/api/biz/:bizId/pic', bearerAuth, upload.single('image'), functi
     return s3uploadProm(params);
   })
   .then( s3data => {
+    debug('s3data:', s3data);
 
     tempPic = new Pic({
       userId: req.user._id,
@@ -95,7 +98,7 @@ picRouter.post('/api/biz/:bizId/pic', bearerAuth, upload.single('image'), functi
 
   })
   .then( pic => res.json(pic))
-  .catch(next);
+  .catch(err => debug(err));
 });
 //pic could be deleted by only authenticated user
 
