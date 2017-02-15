@@ -7,12 +7,15 @@ const bucket = process.env.AWS_BUCKET;
 
 module.exports = exports = {};
 
-exports.uploadMock = {
-  ETag: '"1234abcd"',
-  Location: 'http://mockurl.com/mock.png',
-  Key: 'mock.png',
-  key: 'mock.png',
-  Bucket: bucket
+exports.uploadMock = function() {
+  let key = `${Math.random() + 1}.png`;
+  return {
+    ETag: '"1234abcd"',
+    Location: `http://mockurl.com/${key}`,
+    Key: key,
+    key: key,
+    Bucket: bucket
+  };
 };
 
 AWS.mock('S3', 'upload', function(params, callback) {
