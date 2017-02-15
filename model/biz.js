@@ -22,9 +22,9 @@ const bizSchema = Schema({
   address: { type: String },
   //menu: { Type: Schema.Types.ObjectId },
   menuPics: [Schema.Types.ObjectId],
-  url: { Type: String },
-  email: { Type: String },
-  phone: { Type: String }
+  url: { type: String },
+  email: { type: String },
+  phone: { type: String }
 });
 
 bizSchema.index({ 'loc': '2d' });
