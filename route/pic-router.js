@@ -48,6 +48,8 @@ const picRouter = module.exports = Router();
 picRouter.post('/api/biz/:bizId/pic', bearerAuth, upload.single('image'), function(req, res, next) {
   debug('POST /api/biz/:bizId/pic', req.params.bizId);
 
+  debug(req.file.filename);
+
   if (!req.file) {
     return next(createError(400, 'file not found'));
   }
@@ -131,8 +133,10 @@ picRouter.get('/api/biz/:bizId/pic', (req, res, next) => {
   debug('GET /api/biz/:bizId/pic');
 
   Biz.findById(req.params.bizId)
-  .then( foundBiz => {
-    res.send(foundBiz.menuPics);
+  .populate('menuPics', 'imageURI')
+  .then( biz => {
+    debug(biz);
+    res.json(biz);
   })
   .catch(next);
 });
