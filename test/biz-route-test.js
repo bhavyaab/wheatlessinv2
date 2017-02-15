@@ -11,6 +11,7 @@ mongoose.Promise = Promise;
 
 const geo = require('./lib/mock-geocoder.js');
 const User = require('../model/user.js');
+const Biz = require('../model/biz.js');
 
 require('../server.js');
 
@@ -18,7 +19,9 @@ const examples = {
   'codefellows': {
     name: 'Code Fellows',
     EIN: '55-5556666',
-    address: '2901 3rd Ave, Seattle, WA'
+    address: '2901 3rd Ave, Seattle, WA',
+    url: 'https://www.codefellows.org/',
+    phone: '206-555-9876'
   },
   'crocodile': {
     name: 'Crocodile',
@@ -53,12 +56,11 @@ describe('Biz-router-test', function(){
     .then( () => done())
     .catch(done);
   });
-  // Uncomment the Biz cleanup if you see a dup key error.
-  // after( done => {
-  //   Biz.remove({})
-  //   .then( () => done())
-  //   .catch(done);
-  // });
+  after( done => {
+    Biz.remove({})
+    .then( () => done())
+    .catch(done);
+  });
   describe('Biz:POST :/api/biz', () => {
     describe('invalid path', () => {
       it('should expect 404 status', done => {
@@ -111,16 +113,18 @@ describe('Biz-router-test', function(){
         .send(examples.codefellows)
         .end( (err, res) => {
           if(err) return done(err);
+          this.biz = res.body;
+          debug('this.biz:',this.biz);
           expect(res.status).to.equal(200);
           expect(res.body.name).to.equal(examples.codefellows.name);
           expect(res.body.EIN).to.equal(examples.codefellows.EIN);
           expect(res.body).to.have.property('userId');
           expect(res.body.userId).to.equal(`${this.userId}`);
           expect(res.body.address).to.equal(examples.codefellows.address);
-          let expectedLoc = geo(examples.codefellows.address).location;
+          expect(res.body.url).to.equal(examples.codefellows.url);
+          expect(res.body.phone).to.equal(examples.codefellows.phone);
+          let expectedLoc = geo(examples.codefellows.address)[0].location;
           expect(res.body.loc).to.deep.equal(expectedLoc);
-          this.biz = res.body;
-          debug('this.biz:',this.biz);
           done();
         });
       });
@@ -176,6 +180,7 @@ describe('Biz-router-test', function(){
       });
     });
   });
+
   describe('PUT: api/biz/:id', () => {
     describe(' invalid path', () => {
       it('expect error 404', done => {
@@ -222,11 +227,12 @@ describe('Biz-router-test', function(){
         })
         .end( (err, res) => {
           if(err) return done(err);
+          debug('updated to:', res.body);
           expect(res.status).to.equal(200);
           expect(res.body.name).to.equal(examples.crocodile.name);
           expect(res.body._id).to.equal(`${this.biz._id}`);
           expect(res.body.address).to.equal(examples.crocodile.address);
-          let expectedLoc = geo(examples.crocodile.address).location;
+          let expectedLoc = geo(examples.crocodile.address)[0].location;
           expect(res.body.loc).to.deep.equal(expectedLoc);
           done();
         });

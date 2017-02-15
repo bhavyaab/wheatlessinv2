@@ -21,10 +21,10 @@ const bizSchema = Schema({
   },
   address: { type: String },
   //TODO: Consider allowing more than one menu per biz.
-  menu: { Type: Schema.Types.ObjectId },
-  url: { Type: String },
-  email: { Type: String },
-  phone: { Type: String }
+  menu: { type: Schema.Types.ObjectId },
+  url: { type: String },
+  email: { type: String },
+  phone: { type: String }
 });
 
 bizSchema.index({ 'loc': '2d' });

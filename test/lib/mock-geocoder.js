@@ -3,12 +3,12 @@
 const debug = require('debug')('wheatlessinv2:mock-geocoder');
 
 const map = {
-  '2901 3rd Ave, Seattle, WA': {
+  '2901 3rd Ave, Seattle, WA': [{
     location: { lat: 47.618217, lng: -122.351832 }
-  },
-  '2200 2nd Ave, Seattle, WA': {
+  }],
+  '2200 2nd Ave, Seattle, WA': [{
     location: { lat: 47, lng: -122 } //TODO: Replace with real values.
-  }
+  }]
 };
 
 module.exports = function(address) {

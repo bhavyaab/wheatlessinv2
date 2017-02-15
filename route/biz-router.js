@@ -25,7 +25,8 @@ bizRouter.post('/api/biz', bearerAuth, jsonParser, function(req, res, next) {
       return geocoder.find(req.body.address)
       .then( geodata => {
         debug('geodata:', geodata);
-        biz.loc = geodata.location;
+        let data = geodata[0] || geodata;
+        biz.loc = data.location;
         resolve(biz);
       })
       //TODO OR should we silently fail?
@@ -65,7 +66,8 @@ bizRouter.put('/api/biz/:id', bearerAuth, jsonParser, function(req, res, next) {
       return geocoder.find(biz.address)
       .then( geodata => {
         debug('new geodata:', geodata);
-        biz.loc = geodata.location;
+        let data = geodata[0] || geodata;
+        biz.loc = data.location;
         return biz.save();
       })
       .catch(next);
