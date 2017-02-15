@@ -105,6 +105,32 @@ describe('Pic Routes', function() {
         });
       });
     }); // valid menuId and pic
+
+    describe('with a valid bizId and a second pic', () => {
+      it('should return a list of pic objects', done => {
+        awsMocks.randomize();
+        request.post(`${url}/api/biz/${this.biz._id}/pic`)
+        .set({
+          Authorization: `Bearer ${this.user.token}`
+        })
+        .attach('image', `${__dirname}/data/pic.jpg`)
+        .end( (err, res) => {
+          expect(res.status).to.equal(200);
+          this.picId1 = res.body._id;
+          expect(res.body.bizId).to.equal(this.biz._id.toString());
+          expect(res.body.imageURI).to.equal(awsMocks.uploadMock.Location);
+          expect(res.body.objectKey).to.equal(awsMocks.uploadMock.Key);
+
+          Biz.findById(this.biz._id).then( foundBiz => {
+            expect(foundBiz.menuPics[0].toString()).to.equal(this.picId);
+            expect(foundBiz.menuPics[1].toString()).to.equal(this.picId1);
+          })
+          .then(done);
+        });
+      });
+    }); // valid menuId and second pic
+
+    
   }); // POST /api/menu/:menuId/pic
 
   describe('DELETE: /api/pic/:picId', () => {
