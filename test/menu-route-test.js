@@ -30,7 +30,7 @@ function cleanup() {
   ]);
 }
 
-describe('Menu routes', () => {
+describe.skip('Menu routes', () => {
 
   before( done => {
     mockUser()

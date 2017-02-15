@@ -10,7 +10,7 @@ const createError = require('http-errors');
 const debug = require('debug')('wheatlessinv2:pic-router');
 const jsonParser = require('body-parser').json();
 
-const Menu = require('../model/menu.js');
+const Biz = require('../model/biz.js');
 const Pic  = require('../model/pic.js');
 
 AWS.config.setPromisesDependency(require('bluebird'));
@@ -45,8 +45,10 @@ function s3uploadProm(params) {
 
 const picRouter = module.exports = Router();
 
-picRouter.post('/api/menu/:menuId/pic', bearerAuth, upload.single('image'), function(req, res, next) {
-  debug('POST /api/menu/:menuId/pic', req.params.menuId);
+picRouter.post('/api/biz/:bizId/pic', bearerAuth, upload.single('image'), function(req, res, next) {
+  debug('POST /api/biz/:bizId/pic', req.params.bizId);
+
+  debug(req.file.filename);
 
   if (!req.file) {
     return next(createError(400, 'file not found'));
@@ -65,30 +67,34 @@ picRouter.post('/api/menu/:menuId/pic', bearerAuth, upload.single('image'), func
     Body: fs.createReadStream(req.file.path)
   };
 
-  let tempMenu;
+  let tempBiz;
   let tempPic;
-  Menu.findById(req.params.menuId)
-  .catch( () => next(createError(404, `cannot find menu: ${req.params.menuId}`)))
-  .then( foundMenu => {
-    if(!foundMenu) return Promise.reject(createError(404, 'menu not found'));
-    tempMenu = foundMenu;
+  Biz.findById(req.params.bizId)
+  .catch( () => next(createError(404, `cannot find biz: ${req.params.bizId}`)))
+  .then( foundBiz => {
+    if(!foundBiz) return Promise.reject(createError(404, 'biz not found'));
+    tempBiz = foundBiz;
     return s3uploadProm(params);
   })
   .then( s3data => {
+    debug('s3data:', s3data);
 
-    tempMenu.picURI = s3data.Location;
     tempPic = new Pic({
       userId: req.user._id,
-      menuId: req.params.menuId,
+      bizId: req.params.bizId,
       imageURI: s3data.Location,
       objectKey: s3data.Key
     });
 
-    return Promise.all([
-      tempMenu.save(),
-      tempPic.save()
-    ])
+    return tempPic.save()
+    .then( savedPic => {
+      tempBiz.menuPics.push(savedPic._id);
+    })
     .then( () => {
+      return tempBiz.save();
+    })
+    .then( savedBiz => {
+      debug('saved biz:', savedBiz);
       del(req.file.path);
       return tempPic;
     });
@@ -97,7 +103,8 @@ picRouter.post('/api/menu/:menuId/pic', bearerAuth, upload.single('image'), func
   .then( pic => res.json(pic))
   .catch(next);
 });
-//pic could be deleted by only authenticated user
+
+//TODO: implement delete for multiple pics, remove the pic from the biz's pic array
 picRouter.delete('/api/pic/:picId', bearerAuth, jsonParser, function(req, res, next){
   debug('DELETE api/pic/:picId');
 
@@ -120,4 +127,16 @@ picRouter.delete('/api/pic/:picId', bearerAuth, jsonParser, function(req, res, n
   })
   //TODO: Need to actually remove the pic from mongo.
   .catch(err => next(createError(404, err.message)));
+});
+
+picRouter.get('/api/biz/:bizId/pic', (req, res, next) => {
+  debug('GET /api/biz/:bizId/pic');
+
+  Biz.findById(req.params.bizId)
+  .populate('menuPics', 'imageURI')
+  .then( biz => {
+    debug(biz);
+    res.json(biz);
+  })
+  .catch(next);
 });

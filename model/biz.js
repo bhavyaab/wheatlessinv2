@@ -20,8 +20,7 @@ const bizSchema = Schema({
     lat: { type: Number, min: -90, max: 90 }
   },
   address: { type: String },
-  //TODO: Consider allowing more than one menu per biz.
-  menu: { type: Schema.Types.ObjectId },
+  menuPics : [{ type: Schema.Types.ObjectId, ref: 'pic' }],
   url: { type: String },
   email: { type: String },
   phone: { type: String }
