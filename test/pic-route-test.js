@@ -130,7 +130,7 @@ describe('Pic Routes', function() {
       });
     }); // valid menuId and second pic
 
-    
+
   }); // POST /api/menu/:menuId/pic
 
   describe('DELETE: /api/pic/:picId', () => {
