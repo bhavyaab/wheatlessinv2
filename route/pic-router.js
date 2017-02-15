@@ -10,7 +10,6 @@ const createError = require('http-errors');
 const debug = require('debug')('wheatlessinv2:pic-router');
 const jsonParser = require('body-parser').json();
 
-const Menu = require('../model/menu.js');
 const Biz = require('../model/biz.js');
 const Pic  = require('../model/pic.js');
 
