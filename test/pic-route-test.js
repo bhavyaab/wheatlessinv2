@@ -9,7 +9,6 @@ const request = require('superagent');
 
 const User = require('../model/user.js');
 const Biz  = require('../model/biz.js');
-const Menu = require('../model/menu.js');
 const Pic  = require('../model/pic.js');
 
 require('../server.js');
@@ -88,8 +87,6 @@ describe('Pic Routes', function() {
 
     describe('with a valid bizId and pic', () => {
       it('should return a pic array', done => {
-        this.picURL = awsMocks.uploadMock.Location;
-        console.log(`using biz id: ${this.biz._id}`);
         request.post(`${url}/api/biz/${this.biz._id}/pic`)
         .set({
           Authorization: `Bearer ${this.user.token}`
