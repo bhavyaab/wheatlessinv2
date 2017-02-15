@@ -21,7 +21,7 @@ dotenv.load();
 const PORT = process.env.PORT;
 const app = express();
 
-// debug('Connecting to:',process.env.MONGODB_URI);
+debug('Connecting to:',process.env.MONGODB_URI);
 mongoose.connect(process.env.MONGODB_URI);
 
 app.use(morgan('dev'));
