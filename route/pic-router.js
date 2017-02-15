@@ -46,8 +46,8 @@ function s3uploadProm(params) {
 
 const picRouter = module.exports = Router();
 
-picRouter.post('/api/menu/.bizId/pic', bearerAuth, upload.single('image'), function(req, res, next) {
-  debug('POST /api/menu/.bizId/pic', req.params.bizId);
+picRouter.post('/api/biz/:bizId/pic', bearerAuth, upload.single('image'), function(req, res, next) {
+  debug('POST /api/biz/:bizId/pic', req.params.bizId);
 
   if (!req.file) {
     return next(createError(400, 'file not found'));

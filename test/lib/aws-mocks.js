@@ -7,7 +7,12 @@ const bucket = process.env.AWS_BUCKET;
 
 module.exports = exports = {};
 
-exports.uploadMock = function() {
+exports.randomize = function() {
+  exports.uploadMock = randomMock();
+  debug('new random AWS mock:', exports.uploadMock);
+};
+
+let randomMock = function() {
   let key = `${Math.random() + 1}.png`;
   return {
     ETag: '"1234abcd"',
@@ -17,6 +22,8 @@ exports.uploadMock = function() {
     Bucket: bucket
   };
 };
+
+exports.uploadMock = randomMock();
 
 AWS.mock('S3', 'upload', function(params, callback) {
   debug('upload()');
