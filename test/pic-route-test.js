@@ -143,7 +143,7 @@ describe('Pic Routes', function() {
 
   }); // POST /api/menu/:menuId/pic
 
-  describe('DELETE: /api/pic/:picId', () => {
+  describe.skip('DELETE: /api/pic/:picId', () => {
     describe('with invalid picId and valid token', () => {
       it('should return res status 404', done => {
         request.delete(`${url}/api/pic/12345678901234`)
