@@ -100,7 +100,10 @@ picRouter.post('/api/biz/:bizId/pic', bearerAuth, upload.single('image'), functi
     });
 
   })
-  .then( pic => res.json(pic))
+  .then( () => {
+    return Biz.findById(req.params.bizId).populate('menuPics', 'imageURI')
+    .then( biz => res.json(biz.menuPics));
+  })
   .catch(next);
 });
 
