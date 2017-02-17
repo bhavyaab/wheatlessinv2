@@ -10,15 +10,13 @@ const createError = require('http-errors');
 const Schema = mongoose.Schema;
 
 const userSchema = Schema({
-  //TODO: Use email as the username
-  username: { type: String, required: true, unique: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   findHash: { type: String, unique: true }
 });
 
 userSchema.methods.generatePasswordHash = function(password) {
-  debug('generatePasswordHash', this.username);
+  debug('generatePasswordHash()', this.email);
 
   return new Promise( (resolve, reject) => {
     bcrypt.hash(password, 10, (err, hash) => {
@@ -30,7 +28,7 @@ userSchema.methods.generatePasswordHash = function(password) {
 };
 
 userSchema.methods.comparePasswordHash = function(password) {
-  debug('comparePasswordHash', this.username);
+  debug('comparePasswordHash()', this.email);
 
   return new Promise( (resolve, reject) => {
     bcrypt.compare(password, this.password, (err, valid) => {
@@ -42,7 +40,7 @@ userSchema.methods.comparePasswordHash = function(password) {
 };
 
 userSchema.methods.generateFindHash = function() {
-  debug('generateFindHash', this.username);
+  debug('generateFindHash()', this.email);
 
   return new Promise( (resolve, reject) => {
     let tries = 0;
@@ -71,7 +69,7 @@ userSchema.methods.generateFindHash = function() {
 };
 
 userSchema.methods.generateToken = function() {
-  debug('generateToken', this.username);
+  debug('generateToken()', this.email);
 
   return new Promise( (resolve, reject) => {
     this.generateFindHash()
